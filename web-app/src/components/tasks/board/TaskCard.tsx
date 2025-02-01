@@ -94,10 +94,19 @@ export function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
         {...attributes}
         {...listeners}
       >
-        <Card className="p-4 transition-all duration-200 hover:shadow-lg hover:border-[#004e89] group">
+        <Card 
+          className="p-4 transition-all duration-200 hover:shadow-lg hover:border-[#004e89] group"
+          onClick={() => onEdit(task)}
+        >
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <div className="flex items-center justify-between flex-1 pr-2">
+              <div 
+                className="flex items-center justify-between flex-1 pr-2 cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(task);
+                }}
+              >
                 <h3 className="font-semibold text-[#004e89]">{task.title}</h3>
                 <span className={`text-xs px-2 py-1 rounded-full ${STATUS_COLORS[task.status]}`}>
                   {STATUS_LABELS[task.status]}
