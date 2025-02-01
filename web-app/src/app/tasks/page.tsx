@@ -2,12 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
 import { TaskBoard } from '@/components/tasks/board/TaskBoard';
 import { Task, TaskStatus } from '@/types/task';
+import { TaskModal } from '@/components/tasks/modals/TaskModal';
 
 export default function TasksPage() {
   const [title, setTitle] = useState('');
@@ -26,13 +23,25 @@ export default function TasksPage() {
       }
       const data = await response.json();
       
-      // Firestore timestamp'ini Date'e çevirip, varsayılan status ekleyelim
-      const formattedTasks = data.map((task: any) => ({
-        ...task,
-        status: task.status || 'PENDING',
-        createdAt: task.createdAt ? new Date(task.createdAt.seconds * 1000) : new Date(),
-        updatedAt: task.updatedAt ? new Date(task.updatedAt.seconds * 1000) : undefined
-      }));
+      // Geçerli status değerleri
+      const validStatuses: TaskStatus[] = ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'];
+      
+      // Firestore timestamp'ini Date'e çevirip, status değerlerini doğrulayalım
+      const formattedTasks = data.map((task: any) => {
+        // Status değerini kontrol et ve düzelt
+        let status = task.status || 'PENDING';
+        if (!validStatuses.includes(status)) {
+          console.warn(`Geçersiz status değeri düzeltiliyor: ${status} -> PENDING`);
+          status = 'PENDING';
+        }
+
+        return {
+          ...task,
+          status,
+          createdAt: task.createdAt ? new Date(task.createdAt.seconds * 1000) : new Date(),
+          updatedAt: task.updatedAt ? new Date(task.updatedAt.seconds * 1000) : undefined
+        };
+      });
       
       setTasks(formattedTasks);
     } catch (err) {
@@ -45,8 +54,7 @@ export default function TasksPage() {
     fetchTasks();
   }, []);
 
-  const handleAddTask = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAddTask = async (data: { title: string; description: string; status: TaskStatus }) => {
     setLoading(true);
     setError(null);
     try {
@@ -55,11 +63,7 @@ export default function TasksPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          title, 
-          description,
-          status: 'PENDING' as TaskStatus 
-        }),
+        body: JSON.stringify(data),
       });
 
       if (!response.ok) {
@@ -67,8 +71,6 @@ export default function TasksPage() {
       }
 
       await fetchTasks();
-      setTitle('');
-      setDescription('');
       setShowAddForm(false);
     } catch (err) {
       setError('Görev eklenirken bir hata oluştu');
@@ -80,6 +82,15 @@ export default function TasksPage() {
 
   const handleTaskMove = async (taskId: string, newStatus: TaskStatus) => {
     try {
+      // Optimistik güncelleme
+      const taskToUpdate = tasks.find(t => t.id === taskId);
+      if (!taskToUpdate) return;
+
+      const updatedTasks = tasks.map(task =>
+        task.id === taskId ? { ...task, status: newStatus } : task
+      );
+      setTasks(updatedTasks);
+
       const response = await fetch('/api/updateTaskStatus', {
         method: 'PATCH',
         headers: {
@@ -89,9 +100,12 @@ export default function TasksPage() {
       });
 
       if (!response.ok) {
+        // Hata durumunda eski haline geri döndür
+        setTasks(tasks);
         throw new Error('Görev durumu güncellenemedi');
       }
 
+      // Başarılı durumda sunucudan güncel veriyi al
       await fetchTasks();
     } catch (err) {
       setError('Görev durumu güncellenirken bir hata oluştu');
@@ -121,86 +135,29 @@ export default function TasksPage() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Üst Başlık ve Butonlar */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold text-[#004e89]">Görevler</h2>
-          <p className="text-gray-600">Toplam {tasks.length} görev</p>
-        </div>
-        <Button 
-          onClick={() => setShowAddForm(!showAddForm)}
-          className="bg-[#ff6b35] hover:bg-[#f7c59f] text-white"
-        >
-          {showAddForm ? 'İptal' : 'Yeni Görev'}
-        </Button>
-      </div>
-
+    <div className="h-full flex flex-col">
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
           {error}
         </div>
       )}
 
-      {/* Görev Ekleme Formu */}
-      {showAddForm && (
-        <Card className="p-6 bg-white shadow-lg">
-          <form onSubmit={handleAddTask} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Görev Başlığı
-              </label>
-              <Input
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full"
-                required
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Görev Açıklaması
-              </label>
-              <textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className={cn(
-                  "w-full px-4 py-2 border border-gray-300 rounded-md",
-                  "focus:outline-none focus:ring-2 focus:ring-[#004e89]",
-                  "transition-colors h-32"
-                )}
-                required
-              />
-            </div>
-            
-            <div className="flex justify-end space-x-2">
-              <Button 
-                type="button" 
-                variant="secondary"
-                onClick={() => setShowAddForm(false)}
-              >
-                İptal
-              </Button>
-              <Button 
-                type="submit" 
-                disabled={loading}
-                className="bg-[#004e89] hover:bg-[#1a659e] text-white"
-              >
-                {loading ? 'Ekleniyor...' : 'Kaydet'}
-              </Button>
-            </div>
-          </form>
-        </Card>
-      )}
-
       {/* Görev Tahtası */}
-      <TaskBoard 
-        tasks={tasks} 
-        onTaskMove={handleTaskMove} 
-        onTaskUpdate={handleTaskUpdate}
+      <div className="flex-1">
+        <TaskBoard 
+          tasks={tasks} 
+          onTaskMove={handleTaskMove} 
+          onTaskUpdate={handleTaskUpdate}
+          showAddForm={showAddForm}
+          onShowAddFormChange={setShowAddForm}
+        />
+      </div>
+
+      {/* Yeni Görev Ekleme Modalı */}
+      <TaskModal
+        isOpen={showAddForm}
+        onClose={() => setShowAddForm(false)}
+        onSubmit={handleAddTask}
       />
     </div>
   );

@@ -3,13 +3,22 @@ import { db } from '@/lib/firebase/config';
 import { doc, updateDoc } from 'firebase/firestore';
 import { TaskStatus } from '@/types/task';
 
+const validStatuses: TaskStatus[] = ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'];
+
 export async function PATCH(request: Request) {
   try {
     const { taskId, status } = await request.json();
 
-    if (!taskId || !status) {
+    if (!taskId) {
       return NextResponse.json(
-        { error: 'Task ID ve yeni durum gereklidir' },
+        { error: 'Task ID gereklidir' },
+        { status: 400 }
+      );
+    }
+
+    if (!status || !validStatuses.includes(status)) {
+      return NextResponse.json(
+        { error: 'Geçerli bir durum değeri gereklidir' },
         { status: 400 }
       );
     }

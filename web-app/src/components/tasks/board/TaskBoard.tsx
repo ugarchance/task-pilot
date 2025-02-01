@@ -2,16 +2,21 @@
 
 import { useState } from 'react';
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, MouseSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { SortableContext, arrayMove } from '@dnd-kit/sortable';
-import { Task, TaskStatus, TaskColumn } from '@/types/task';
+import { Task, TaskStatus } from '@/types/task';
 import { TaskColumnComponent } from './TaskColumn';
 import { Card } from '@/components/ui/card';
 import { TaskModal } from '../modals/TaskModal';
+import { TaskBoardHeader } from './TaskBoardHeader';
+import { TaskBoardStats } from './TaskBoardStats';
+import { useTaskFilters } from '@/hooks/useTaskFilters';
+import { useDragAndDrop } from '@/hooks/useDragAndDrop';
 
 interface TaskBoardProps {
   tasks: Task[];
   onTaskMove: (taskId: string, newStatus: TaskStatus) => Promise<void>;
   onTaskUpdate: (taskId: string, data: { title: string; description: string; status: TaskStatus }) => Promise<void>;
+  showAddForm: boolean;
+  onShowAddFormChange: (show: boolean) => void;
 }
 
 const COLUMNS: { id: TaskStatus; title: string }[] = [
@@ -21,46 +26,29 @@ const COLUMNS: { id: TaskStatus; title: string }[] = [
   { id: 'CANCELLED', title: 'İptal Edildi' },
 ];
 
-export function TaskBoard({ tasks, onTaskMove, onTaskUpdate }: TaskBoardProps) {
-  const [activeId, setActiveId] = useState<string | null>(null);
+export function TaskBoard({ tasks, onTaskMove, onTaskUpdate, showAddForm, onShowAddFormChange }: TaskBoardProps) {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const sensors = useSensors(
-    useSensor(MouseSensor, {
-      activationConstraint: {
-        distance: 5,
-      },
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 250,
-        tolerance: 5,
-      },
-    })
-  );
+
+  const { 
+    searchQuery, 
+    setSearchQuery, 
+    statusFilter, 
+    setStatusFilter,
+    filteredTasks 
+  } = useTaskFilters(tasks);
+
+  const {
+    sensors,
+    activeId,
+    activeTask,
+    handleDragStart,
+    handleDragEnd
+  } = useDragAndDrop(tasks, onTaskMove);
 
   const columns = COLUMNS.map((col) => ({
     ...col,
-    tasks: tasks.filter((task) => task.status === col.id),
+    tasks: filteredTasks.filter((task) => task.status === col.id),
   }));
-
-  const handleDragStart = (event: DragStartEvent) => {
-    setActiveId(event.active.id as string);
-  };
-
-  const handleDragEnd = async (event: DragEndEvent) => {
-    const { active, over } = event;
-    
-    if (!over) return;
-
-    const activeTask = tasks.find((task) => task.id === active.id);
-    const overId = over.id as TaskStatus;
-
-    if (activeTask && activeTask.status !== overId) {
-      await onTaskMove(activeTask.id, overId);
-    }
-
-    setActiveId(null);
-  };
 
   const handleEditTask = (task: Task) => {
     setEditingTask(task);
@@ -73,34 +61,48 @@ export function TaskBoard({ tasks, onTaskMove, onTaskUpdate }: TaskBoardProps) {
     }
   };
 
-  const activeTask = activeId ? tasks.find((task) => task.id === activeId) : null;
-
   return (
-    <>
-      <DndContext
-        sensors={sensors}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {columns.map((column) => (
-            <TaskColumnComponent
-              key={column.id}
-              column={column}
-              onEditTask={handleEditTask}
-            />
-          ))}
+    <div className="flex flex-col h-full">
+      <div className="bg-white/80 backdrop-blur-sm shadow-sm border-b">
+        <div className="container mx-auto py-3">
+          <TaskBoardHeader
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            statusFilter={statusFilter}
+            onStatusFilterChange={setStatusFilter}
+            columns={COLUMNS}
+            onAddTask={() => onShowAddFormChange(true)}
+          />
+          <TaskBoardStats tasks={tasks} columns={COLUMNS} />
         </div>
+      </div>
 
-        <DragOverlay>
-          {activeId && activeTask ? (
-            <Card className="p-4 w-[300px] bg-white shadow-lg">
-              <h3 className="font-semibold">{activeTask.title}</h3>
-              <p className="text-sm text-gray-600 truncate">{activeTask.description}</p>
-            </Card>
-          ) : null}
-        </DragOverlay>
-      </DndContext>
+      <div className="flex-1 p-4 bg-gray-50/50">
+        <DndContext
+          sensors={sensors}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 h-full">
+            {columns.map((column) => (
+              <TaskColumnComponent
+                key={column.id}
+                column={column}
+                onEditTask={handleEditTask}
+              />
+            ))}
+          </div>
+
+          <DragOverlay>
+            {activeId && activeTask ? (
+              <Card className="p-2.5 w-[260px] bg-white/90 backdrop-blur-sm shadow-lg border border-gray-100">
+                <h3 className="font-medium text-[#004e89] text-sm">{activeTask.title}</h3>
+                <p className="text-xs text-gray-600 truncate mt-1">{activeTask.description}</p>
+              </Card>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
+      </div>
 
       <TaskModal
         task={editingTask || undefined}
@@ -108,6 +110,6 @@ export function TaskBoard({ tasks, onTaskMove, onTaskUpdate }: TaskBoardProps) {
         onClose={() => setEditingTask(null)}
         onSubmit={handleUpdateTask}
       />
-    </>
+    </div>
   );
 } 
