@@ -7,11 +7,16 @@ import { Card } from '@/components/ui/card';
 import { Task, TaskColumn, TaskStatus } from '@/types/task';
 
 interface TaskColumnProps {
-  column: TaskColumn;
+  column: {
+    id: TaskStatus;
+    title: string;
+    tasks: Task[];
+  };
   onEditTask: (task: Task) => void;
+  onDeleteTask: (taskId: string) => Promise<void>;
 }
 
-export function TaskColumnComponent({ column, onEditTask }: TaskColumnProps) {
+export function TaskColumnComponent({ column, onEditTask, onDeleteTask }: TaskColumnProps) {
   const { setNodeRef } = useDroppable({
     id: column.id,
   });
@@ -70,6 +75,7 @@ export function TaskColumnComponent({ column, onEditTask }: TaskColumnProps) {
               key={task.id} 
               task={task} 
               onEdit={onEditTask}
+              onDelete={onDeleteTask}
             />
           ))}
         </SortableContext>

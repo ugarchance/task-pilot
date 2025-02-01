@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/firebase/config';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, getDoc } from 'firebase/firestore';
 import { TaskStatus } from '@/types/task';
 
 const validStatuses: TaskStatus[] = ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'];
@@ -24,6 +24,14 @@ export async function PATCH(request: Request) {
     }
 
     const taskRef = doc(db, 'tasks', taskId);
+    const taskDoc = await getDoc(taskRef);
+
+    if (!taskDoc.exists()) {
+      return NextResponse.json(
+        { error: 'Görev bulunamadı' },
+        { status: 404 }
+      );
+    }
     
     await updateDoc(taskRef, {
       status,

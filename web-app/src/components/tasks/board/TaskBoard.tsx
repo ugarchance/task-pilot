@@ -15,6 +15,7 @@ interface TaskBoardProps {
   tasks: Task[];
   onTaskMove: (taskId: string, newStatus: TaskStatus) => Promise<void>;
   onTaskUpdate: (taskId: string, data: { title: string; description: string; status: TaskStatus }) => Promise<void>;
+  onTaskDelete: (taskId: string) => Promise<void>;
   showAddForm: boolean;
   onShowAddFormChange: (show: boolean) => void;
 }
@@ -26,8 +27,15 @@ const COLUMNS: { id: TaskStatus; title: string }[] = [
   { id: 'CANCELLED', title: 'İptal Edildi' },
 ];
 
-export function TaskBoard({ tasks, onTaskMove, onTaskUpdate, showAddForm, onShowAddFormChange }: TaskBoardProps) {
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
+export function TaskBoard({ 
+  tasks, 
+  onTaskMove, 
+  onTaskUpdate, 
+  onTaskDelete,
+  showAddForm, 
+  onShowAddFormChange 
+}: TaskBoardProps) {
+  const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
 
   const { 
     searchQuery, 
@@ -57,7 +65,7 @@ export function TaskBoard({ tasks, onTaskMove, onTaskUpdate, showAddForm, onShow
   const handleUpdateTask = async (data: { title: string; description: string; status: TaskStatus }) => {
     if (editingTask) {
       await onTaskUpdate(editingTask.id, data);
-      setEditingTask(null);
+      setEditingTask(undefined);
     }
   };
 
@@ -89,6 +97,7 @@ export function TaskBoard({ tasks, onTaskMove, onTaskUpdate, showAddForm, onShow
                 key={column.id}
                 column={column}
                 onEditTask={handleEditTask}
+                onDeleteTask={onTaskDelete}
               />
             ))}
           </div>
@@ -105,9 +114,12 @@ export function TaskBoard({ tasks, onTaskMove, onTaskUpdate, showAddForm, onShow
       </div>
 
       <TaskModal
-        task={editingTask || undefined}
-        isOpen={!!editingTask}
-        onClose={() => setEditingTask(null)}
+        isOpen={!!editingTask || showAddForm}
+        onClose={() => {
+          setEditingTask(undefined);
+          onShowAddFormChange(false);
+        }}
+        task={editingTask}
         onSubmit={handleUpdateTask}
       />
     </div>

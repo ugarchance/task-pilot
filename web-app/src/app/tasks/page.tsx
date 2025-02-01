@@ -96,20 +96,24 @@ export default function TasksPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ taskId, status: newStatus }),
+        body: JSON.stringify({ 
+          taskId, 
+          status: newStatus,
+          updatedAt: new Date()
+        }),
       });
 
       if (!response.ok) {
         // Hata durumunda eski haline geri döndür
         setTasks(tasks);
-        throw new Error('Görev durumu güncellenemedi');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Görev durumu güncellenemedi');
       }
-
-      // Başarılı durumda sunucudan güncel veriyi al
-      await fetchTasks();
     } catch (err) {
-      setError('Görev durumu güncellenirken bir hata oluştu');
       console.error('Görev durumu güncellenirken hata:', err);
+      setError(err instanceof Error ? err.message : 'Görev durumu güncellenirken bir hata oluştu');
+      // Hata durumunda orijinal listeyi geri yükle
+      await fetchTasks();
     }
   };
 
@@ -134,30 +138,48 @@ export default function TasksPage() {
     }
   };
 
-  return (
-    <div className="h-full flex flex-col">
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-          {error}
-        </div>
-      )}
+  const handleTaskDelete = async (taskId: string) => {
+    try {
+      // Optimistik güncelleme
+      const updatedTasks = tasks.filter(task => task.id !== taskId);
+      setTasks(updatedTasks);
 
-      {/* Görev Tahtası */}
-      <div className="flex-1">
-        <TaskBoard 
-          tasks={tasks} 
-          onTaskMove={handleTaskMove} 
-          onTaskUpdate={handleTaskUpdate}
-          showAddForm={showAddForm}
-          onShowAddFormChange={setShowAddForm}
-        />
+      const response = await fetch('/api/deleteTask', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: taskId }),
+      });
+
+      if (!response.ok) {
+        // Hata durumunda orijinal listeyi geri yükle
+        await fetchTasks();
+        throw new Error('Görev silinemedi');
+      }
+    } catch (error) {
+      console.error('Görev silinirken hata:', error);
+      setError('Görev silinirken bir hata oluştu');
+    }
+  };
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-red-500">{error}</div>
       </div>
+    );
+  }
 
-      {/* Yeni Görev Ekleme Modalı */}
-      <TaskModal
-        isOpen={showAddForm}
-        onClose={() => setShowAddForm(false)}
-        onSubmit={handleAddTask}
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <TaskBoard
+        tasks={tasks}
+        onTaskMove={handleTaskMove}
+        onTaskUpdate={handleTaskUpdate}
+        onTaskDelete={handleTaskDelete}
+        showAddForm={showAddForm}
+        onShowAddFormChange={setShowAddForm}
       />
     </div>
   );
