@@ -22,13 +22,13 @@ export const metadata: Metadata = {
 
 const Header = () => {
   return (
-    <header className="bg-white border-b border-gray-200 h-16">
-      <div className="container mx-auto px-4 h-full">
+    <header className="bg-white border-b border-gray-200 h-12">
+      <div className="container mx-auto px-3 h-full">
         <nav className="flex items-center justify-between h-full">
-          <div className="text-xl font-bold text-blue-600">Task Pilot</div>
-          <div className="flex items-center space-x-4">
-            <a href="/tasks" className="text-gray-600 hover:text-blue-600">Görevler</a>
-            <a href="/analytics" className="text-gray-600 hover:text-blue-600">Analitik</a>
+          <div className="text-base font-bold text-blue-600">Task Pilot</div>
+          <div className="flex items-center space-x-3">
+            <a href="/tasks" className="text-sm text-gray-600 hover:text-blue-600">Görevler</a>
+            <a href="/analytics" className="text-sm text-gray-600 hover:text-blue-600">Analitik</a>
           </div>
         </nav>
       </div>
@@ -39,8 +39,8 @@ const Header = () => {
 const Footer = () => {
   return (
     <footer className="bg-white border-t border-gray-200">
-      <div className="container mx-auto px-4 py-4">
-        <div className="text-center text-gray-600 text-sm">
+      <div className="container mx-auto px-3 py-2">
+        <div className="text-center text-gray-600 text-xs">
           © 2024 Task Pilot. Tüm hakları saklıdır.
         </div>
       </div>

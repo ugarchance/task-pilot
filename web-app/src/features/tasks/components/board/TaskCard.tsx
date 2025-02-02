@@ -93,7 +93,7 @@ export function TaskCard({ task, onEdit, onDelete, singleColumnMode = false }: T
         style={style}
         className={cn(
           "touch-manipulation",
-          singleColumnMode ? "px-0 py-2" : "p-4",
+          singleColumnMode ? "px-0 py-1.5" : "p-3",
           isDragging ? "opacity-50" : ""
         )}
         {...attributes}
@@ -101,19 +101,19 @@ export function TaskCard({ task, onEdit, onDelete, singleColumnMode = false }: T
       >
         <Card className={cn(
           "relative bg-white hover:shadow-md transition-shadow",
-          singleColumnMode ? "p-4" : "p-3",
+          singleColumnMode ? "p-3" : "p-2",
           isDragging ? "shadow-lg ring-2 ring-primary ring-offset-2" : ""
         )}>
-          <div className="flex flex-col space-y-2">
-            <div className="flex items-start justify-between gap-2">
+          <div className="flex flex-col space-y-1.5">
+            <div className="flex items-start justify-between gap-1.5">
               <h3 className={cn(
                 "font-medium flex-1",
-                singleColumnMode ? "text-lg" : "text-sm"
+                singleColumnMode ? "text-base" : "text-xs"
               )}>{task.title}</h3>
               
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1">
                 <span className={cn(
-                  "text-xs px-2 py-1 rounded-full",
+                  "text-[10px] px-1.5 py-0.5 rounded-full",
                   STATUS_COLORS[task.status]
                 )}>
                   {STATUS_LABELS[task.status]}
@@ -122,36 +122,36 @@ export function TaskCard({ task, onEdit, onDelete, singleColumnMode = false }: T
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 text-gray-500 hover:text-gray-700"
+                  className="h-6 w-6 text-gray-500 hover:text-gray-700"
                   onClick={() => onEdit(task)}
                 >
-                  <span className="material-icons text-base">edit</span>
+                  <span className="material-icons text-sm">edit</span>
                 </Button>
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 text-gray-500 hover:text-red-600"
+                  className="h-6 w-6 text-gray-500 hover:text-red-600"
                   onClick={() => setShowDeleteDialog(true)}
                 >
-                  <span className="material-icons text-base">delete</span>
+                  <span className="material-icons text-sm">delete</span>
                 </Button>
               </div>
             </div>
 
             <p className={cn(
               "text-gray-600 line-clamp-2",
-              singleColumnMode ? "text-base" : "text-sm"
+              singleColumnMode ? "text-sm" : "text-[10px]"
             )}>{task.description}</p>
             
-            <div className="flex items-center justify-between text-xs text-gray-500">
-              <div className="flex items-center space-x-2">
-                <span className="material-icons text-sm">calendar_today</span>
+            <div className="flex items-center justify-between text-[10px] text-gray-500">
+              <div className="flex items-center space-x-1">
+                <span className="material-icons text-xs">calendar_today</span>
                 <span>{formatDate(task.createdAt)}</span>
               </div>
               {task.updatedAt && (
-                <div className="flex items-center space-x-2">
-                  <span className="material-icons text-sm">update</span>
+                <div className="flex items-center space-x-1">
+                  <span className="material-icons text-xs">update</span>
                   <span>Güncellendi: {formatDate(task.updatedAt)}</span>
                 </div>
               )}
@@ -161,19 +161,19 @@ export function TaskCard({ task, onEdit, onDelete, singleColumnMode = false }: T
       </div>
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="max-w-[360px]">
+        <AlertDialogContent className="max-w-[320px]">
           <AlertDialogHeader>
-            <AlertDialogTitle>Görevi Sil</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-base">Görevi Sil</AlertDialogTitle>
+            <AlertDialogDescription className="text-sm">
               &quot;{task.title}&quot; görevini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>İptal</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting} className="text-xs h-8">İptal</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isDeleting}
-              className="bg-red-500 hover:bg-red-600 text-white"
+              className="bg-red-500 hover:bg-red-600 text-white text-xs h-8"
             >
               {isDeleting ? 'Siliniyor...' : 'Sil'}
             </AlertDialogAction>

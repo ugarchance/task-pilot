@@ -19,20 +19,20 @@ export default function TasksLayout({ children }: TasksLayoutProps) {
   ];
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] overflow-hidden">
-      <aside className="w-56 bg-white shadow-lg">
-        <nav className="p-3 space-y-1.5">
+    <div className="flex h-[calc(100vh-3rem)] overflow-hidden">
+      <aside className="w-48 bg-white shadow-lg">
+        <nav className="p-2 space-y-1">
           {menuItems.map((item) => (
             <Card 
               key={item.href}
-              className={`p-2.5 cursor-pointer transition-colors ${
+              className={`p-2 cursor-pointer transition-colors ${
                 pathname === item.href 
                   ? 'bg-blue-50 border-blue-200' 
                   : 'hover:bg-[#efefd0]'
               }`}
             >
-              <Link href={item.href} className="flex items-center space-x-2 text-sm">
-                <span className={`material-icons text-[18px] ${
+              <Link href={item.href} className="flex items-center space-x-1.5 text-xs">
+                <span className={`material-icons text-[16px] ${
                   pathname === item.href ? 'text-blue-600' : ''
                 }`}>
                   {item.icon}

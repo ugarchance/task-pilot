@@ -85,8 +85,8 @@ export function TaskBoard({
   return (
     <div className="flex flex-col h-full">
       <div className="bg-white/80 backdrop-blur-sm shadow-sm border-b">
-        <div className="container mx-auto py-3">
-          <div className="flex items-center justify-between gap-4">
+        <div className="container mx-auto py-2">
+          <div className="flex items-center justify-between gap-3">
             <div className="flex-1">
               <TaskBoardHeader
                 searchQuery={searchQuery}
@@ -100,22 +100,22 @@ export function TaskBoard({
             </div>
             <Button
               onClick={() => onShowAddFormChange(true)}
-              className="h-7 px-2.5 bg-[#004e89]/90 hover:bg-[#004e89] text-white text-xs font-medium rounded-md transition-all duration-200 hover:shadow-sm flex items-center gap-1.5 shrink-0"
+              className="h-6 px-2 bg-[#004e89]/90 hover:bg-[#004e89] text-white text-xs font-medium rounded-md transition-all duration-200 hover:shadow-sm flex items-center gap-1 shrink-0"
               size="sm"
             >
-              <span className="material-icons text-[14px]">add</span>
+              <span className="material-icons text-[12px]">add</span>
               Yeni Görev
             </Button>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 p-4 bg-gray-50/50 relative min-h-0">
+      <div className="flex-1 p-3 bg-gray-50/50 relative min-h-0">
         {loading && (
           <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] flex items-center justify-center z-10">
-            <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-lg shadow-lg">
-              <div className="w-5 h-5 border-2 border-[#004e89] border-t-transparent rounded-full animate-spin" />
-              <span className="text-sm text-gray-600">Yükleniyor...</span>
+            <div className="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-lg shadow-lg">
+              <div className="w-4 h-4 border-2 border-[#004e89] border-t-transparent rounded-full animate-spin" />
+              <span className="text-xs text-gray-600">Yükleniyor...</span>
             </div>
           </div>
         )}
@@ -125,7 +125,7 @@ export function TaskBoard({
           onDragEnd={handleDragEnd}
         >
           <div className={cn(
-            "grid gap-4 h-full min-h-0",
+            "grid gap-3 h-full min-h-0",
             singleColumnMode ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
           )}>
             {columnsWithTasks.map((column) => (
@@ -141,9 +141,9 @@ export function TaskBoard({
 
           <DragOverlay>
             {activeId && activeTask ? (
-              <Card className="p-2.5 w-[260px] bg-white/90 backdrop-blur-sm shadow-lg border border-gray-100">
-                <h3 className="font-medium text-[#004e89] text-sm">{activeTask.title}</h3>
-                <p className="text-xs text-gray-600 truncate mt-1">{activeTask.description}</p>
+              <Card className="p-2 w-[220px] bg-white/90 backdrop-blur-sm shadow-lg border border-gray-100">
+                <h3 className="font-medium text-[#004e89] text-xs">{activeTask.title}</h3>
+                <p className="text-xs text-gray-600 truncate mt-0.5">{activeTask.description}</p>
               </Card>
             ) : null}
           </DragOverlay>

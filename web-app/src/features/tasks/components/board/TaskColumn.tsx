@@ -57,19 +57,19 @@ export function TaskColumnComponent({ column, onEditTask, onDeleteTask, singleCo
 
   return (
     <Card className={cn(
-      "flex flex-col shadow-sm h-[calc(95vh-12rem)]",
+      "flex flex-col shadow-sm h-[calc(95vh-9rem)]",
       getColumnColor(column.id)
     )}>
       <div className={cn(
-        "py-2 px-3 border-b shrink-0",
+        "py-1.5 px-2 border-b shrink-0",
         getColumnHeaderColor(column.id)
       )}>
         <div className="flex items-center justify-between">
           <h2 className={cn(
-            "text-sm font-medium",
+            "text-xs font-medium",
             singleColumnMode ? "text-[#004e89]" : "text-gray-700"
           )}>{column.title}</h2>
-          <span className="text-xs font-medium text-gray-500 bg-white/50 px-2 py-0.5 rounded">
+          <span className="text-[10px] font-medium text-gray-500 bg-white/50 px-1.5 py-0.5 rounded">
             {column.tasks.length}
           </span>
         </div>
@@ -78,8 +78,8 @@ export function TaskColumnComponent({ column, onEditTask, onDeleteTask, singleCo
       <div
         ref={setNodeRef}
         className={cn(
-          "flex-1 p-2 space-y-2 overflow-y-auto min-h-0 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent hover:scrollbar-thumb-gray-300",
-          singleColumnMode && "px-4"
+          "flex-1 p-1.5 space-y-1.5 overflow-y-auto min-h-0 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent hover:scrollbar-thumb-gray-300",
+          singleColumnMode && "px-3"
         )}
       >
         <SortableContext
@@ -98,8 +98,8 @@ export function TaskColumnComponent({ column, onEditTask, onDeleteTask, singleCo
         </SortableContext>
 
         {column.tasks.length === 0 && (
-          <div className="h-24 flex items-center justify-center border border-dashed border-gray-200 rounded-lg bg-white/50">
-            <p className="text-xs text-gray-400">Bu kolonda görev yok</p>
+          <div className="h-20 flex items-center justify-center border border-dashed border-gray-200 rounded-lg bg-white/50">
+            <p className="text-[10px] text-gray-400">Bu kolonda görev yok</p>
           </div>
         )}
       </div>
