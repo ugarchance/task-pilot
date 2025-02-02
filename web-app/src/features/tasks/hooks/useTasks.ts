@@ -71,8 +71,8 @@ export function useTasks(): UseTasksReturn {
         title: data.title,
         description: data.description,
         status: 'PENDING',
-        createdAt: new Date(),
-        updatedAt: new Date()
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
 
       // Optimistik güncelleme yap
@@ -106,16 +106,25 @@ export function useTasks(): UseTasksReturn {
 
   // Görev durumunu güncelle (optimistik)
   const handleUpdateTaskStatus = useCallback(async (taskId: string, status: TaskStatus) => {
+    // Geçerli durum değerlerini kontrol et
+    const validStatuses: TaskStatus[] = ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'];
+    if (!validStatuses.includes(status)) {
+      console.error('Geçersiz durum değeri:', status);
+      toast.error('Geçersiz durum değeri!');
+      return;
+    }
+
     try {
       // Önce optimistik güncelleme yap
       dispatch(startOptimisticUpdate({ taskId, status }));
       
       // Sonra API çağrısını yap
-      await dispatch(updateTaskStatus({ taskId, status }));
+      await dispatch(updateTaskStatus({ taskId, status })).unwrap();
     } catch (error) {
-      // Hata durumunda slice içindeki rejected case otomatik olarak
-      // optimistik güncellemeyi geri alacak
       console.error('Görev durumu güncellenirken hata:', error);
+      toast.error('Durum güncellenemedi!', {
+        description: 'Bir hata oluştu, lütfen tekrar deneyin.'
+      });
     }
   }, [dispatch]);
 
