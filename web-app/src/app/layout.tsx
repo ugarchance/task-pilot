@@ -1,10 +1,6 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from "next/font/google";
-import StoreProvider from './StoreProvider';
-import { Toaster } from 'sonner';
-import Header from '@/shared/components/layout/Header';
-import Footer from '@/shared/components/layout/Footer';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,6 +18,8 @@ export const metadata: Metadata = {
   themeColor: '#004e89',
 };
 
+import ClientLayout from './ClientLayout';
+
 export default function RootLayout({
   children,
 }: {
@@ -33,14 +31,9 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col h-full overflow-hidden`}>
-        <StoreProvider>
-          <Header />
-          <main className="flex-1 min-h-0">
-            {children}
-          </main>
-          <Footer />
-        </StoreProvider>
-        <Toaster position="top-right" richColors />
+        <ClientLayout>
+          {children}
+        </ClientLayout>
       </body>
     </html>
   );

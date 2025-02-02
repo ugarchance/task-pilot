@@ -119,3 +119,18 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+  }
+  
+  @keyframes shimmer {
+    0% {
+      mask-position: 200% 0;
+    }
+    100% {
+      mask-position: -200% 0;
+    }
+  }
+}
