@@ -1,3 +1,112 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+.coverage
+__tests__/_snapshots_/
+.jest/
+
+# Production
+build/
+dist/
+out/
+.next/
+web-build/
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+logs/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-workspace
+*.sublime-project
+
+# OS
+.DS_Store
+Thumbs.db
+*.pem
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+
+# Mobile specific
+mobile-app/.expo/
+mobile-app/dist/
+mobile-app/web-build/
+mobile-app/ios/Pods/
+mobile-app/android/.gradle/
+mobile-app/android/app/build/
+mobile-app/*.jks
+mobile-app/*.p8
+mobile-app/*.p12
+mobile-app/*.key
+mobile-app/*.mobileprovision
+mobile-app/*.orig.*
+mobile-app/*.ipa
+mobile-app/*.apk
+mobile-app/*.aab
+mobile-app/expo-env.d.ts
+
+# Web specific
+web-app/.next/
+web-app/out/
+web-app/.vercel/
+web-app/.env*
+web-app/build/
+web-app/.next
+web-app/coverage
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+.runtimeconfig.json
+*-debug.log
+
+# Cache
+.cache/
+.npm
+.eslintcache
+.stylelintcache
+.parcel-cache
+
+# Temporary files
+*.bak
+*.tmp
+*.temp
+.history/
+
+# System Files
+$RECYCLE.BIN/
+
 # Logs
 logs
 *.log
@@ -45,9 +154,6 @@ bower_components
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
 
-# Dependency directories
-node_modules/
-
 # Optional npm cache directory
 .npm
 
@@ -62,9 +168,6 @@ node_modules/
 
 # Yarn Integrity file
 .yarn-integrity
-
-# dotenv environment variables file
-.env
 
 # dataconnect generated files
 .dataconnect
