@@ -86,13 +86,13 @@ export function TaskCard({ task, onEdit, onDelete, singleColumnMode = false }: T
           <div className="flex flex-col space-y-1.5">
             <div className="flex items-start justify-between gap-1.5">
               <h3 className={cn(
-                "font-medium flex-1",
+                "font-medium flex-1 break-words min-w-0",
                 singleColumnMode ? "text-base" : "text-xs"
               )}>{task.title}</h3>
               
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center gap-1 shrink-0">
                 <span className={cn(
-                  "text-[10px] px-1.5 py-0.5 rounded-full",
+                  "text-[10px] px-1.5 py-0.5 rounded-full whitespace-nowrap",
                   TASK_CARD_STATUS_COLORS[task.status]
                 )}>
                   {STATUS_LABELS[task.status]}
@@ -101,7 +101,7 @@ export function TaskCard({ task, onEdit, onDelete, singleColumnMode = false }: T
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="h-6 w-6 text-gray-500 hover:text-gray-700"
+                  className="h-6 w-6 text-gray-500 hover:text-gray-700 shrink-0"
                   onClick={() => onEdit(task)}
                 >
                   <span className="material-icons text-sm">edit</span>
@@ -110,7 +110,7 @@ export function TaskCard({ task, onEdit, onDelete, singleColumnMode = false }: T
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="h-6 w-6 text-gray-500 hover:text-red-600"
+                  className="h-6 w-6 text-gray-500 hover:text-red-600 shrink-0"
                   onClick={() => setShowDeleteDialog(true)}
                 >
                   <span className="material-icons text-sm">delete</span>
