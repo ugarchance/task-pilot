@@ -16,8 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
-import { cn
- } from '@/shared/utils/common';
+import { cn } from '@/shared/utils/common';
 
 interface TaskCardProps {
   task: Task;
@@ -53,6 +52,10 @@ export function TaskCard({ task, onEdit, onDelete, singleColumnMode = false }: T
     isDragging,
   } = useSortable({
     id: task.id,
+    data: {
+      type: 'Task',
+      task,
+    },
   });
 
   const style = {
@@ -60,10 +63,8 @@ export function TaskCard({ task, onEdit, onDelete, singleColumnMode = false }: T
     transition,
   };
 
-  const formatDate = (date: Date) => {
-    if (!(date instanceof Date)) {
-      date = new Date(date);
-    }
+  const formatDate = (dateStr: string | Date) => {
+    const date = dateStr instanceof Date ? dateStr : new Date(dateStr);
     return date.toLocaleString('tr-TR', {
       year: 'numeric',
       month: 'long',
@@ -91,48 +92,51 @@ export function TaskCard({ task, onEdit, onDelete, singleColumnMode = false }: T
         ref={setNodeRef}
         style={style}
         className={cn(
-          "cursor-grab active:cursor-grabbing",
+          "touch-manipulation",
           singleColumnMode ? "px-0 py-2" : "p-4",
           isDragging ? "opacity-50" : ""
         )}
         {...attributes}
         {...listeners}
       >
-        <Card 
-          className={cn(
-            "transition-all duration-200 hover:shadow-lg hover:border-[#004e89] group",
-            singleColumnMode ? "p-5" : "p-4"
-          )}
-          onClick={() => onEdit(task)}
-        >
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <div 
-                className="flex items-center justify-between flex-1 pr-2 cursor-pointer"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit(task);
-                }}
-              >
-                <h3 className={cn(
-                  "font-semibold text-[#004e89]",
-                  singleColumnMode && "text-lg"
-                )}>{task.title}</h3>
-                <span className={`text-xs px-2 py-1 rounded-full ${STATUS_COLORS[task.status]}`}>
+        <Card className={cn(
+          "relative bg-white hover:shadow-md transition-shadow",
+          singleColumnMode ? "p-4" : "p-3",
+          isDragging ? "shadow-lg ring-2 ring-primary ring-offset-2" : ""
+        )}>
+          <div className="flex flex-col space-y-2">
+            <div className="flex items-start justify-between gap-2">
+              <h3 className={cn(
+                "font-medium flex-1",
+                singleColumnMode ? "text-lg" : "text-sm"
+              )}>{task.title}</h3>
+              
+              <div className="flex items-center space-x-2">
+                <span className={cn(
+                  "text-xs px-2 py-1 rounded-full",
+                  STATUS_COLORS[task.status]
+                )}>
                   {STATUS_LABELS[task.status]}
                 </span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-gray-500 hover:text-gray-700"
+                  onClick={() => onEdit(task)}
+                >
+                  <span className="material-icons text-base">edit</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-gray-500 hover:text-red-600"
+                  onClick={() => setShowDeleteDialog(true)}
+                >
+                  <span className="material-icons text-base">delete</span>
+                </Button>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowDeleteDialog(true);
-                }}
-              >
-                <span className="material-icons text-red-500/70 hover:text-red-600 text-[16px]">delete_outline</span>
-              </Button>
             </div>
 
             <p className={cn(

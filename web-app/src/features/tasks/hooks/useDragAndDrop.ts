@@ -4,6 +4,7 @@ import { Task, TaskStatus } from '../types';
 import { useAppDispatch } from '@/shared/hooks/useAppDispatch';
 import { startOptimisticUpdate, revertOptimisticUpdate } from '../store/taskSlice';
 import { toast } from 'sonner';
+import { arrayMove } from '@dnd-kit/sortable';
 
 export function useDragAndDrop(
   tasks: Task[],
@@ -39,9 +40,15 @@ export function useDragAndDrop(
     
     if (!over) return;
 
-    if (over && active.id !== over.id) {
-      const taskId = active.id as string;
-      const newStatus = over.id as TaskStatus;
+    const taskId = active.id as string;
+    const overId = over.id;
+
+    // Eğer aynı görevin üzerine bırakıldıysa işlem yapma
+    if (taskId === overId) return;
+
+    // Görev bir sütunun üzerine bırakıldıysa (sütun ID'leri TaskStatus tipinde)
+    if (['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'].includes(overId as string)) {
+      const newStatus = overId as TaskStatus;
       const validStatuses: TaskStatus[] = ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'];
 
       // Önce optimistik güncelleme yap
@@ -53,6 +60,24 @@ export function useDragAndDrop(
         dispatch(revertOptimisticUpdate(taskId));
         return;
       }
+
+      // Arka planda API çağrısını yap
+      onTaskMove(taskId, newStatus).catch((error) => {
+        console.error('Görev durumu güncellenirken hata:', error);
+        toast.error('Durum güncellenemedi!', {
+          description: 'Bir hata oluştu, lütfen tekrar deneyin.'
+        });
+      });
+    }
+    // Görev başka bir görevin üzerine bırakıldıysa
+    else {
+      const overTask = tasks.find(task => task.id === overId);
+      if (!overTask) return;
+
+      const newStatus = overTask.status;
+      
+      // Önce optimistik güncelleme yap
+      dispatch(startOptimisticUpdate({ taskId, status: newStatus }));
 
       // Arka planda API çağrısını yap
       onTaskMove(taskId, newStatus).catch((error) => {

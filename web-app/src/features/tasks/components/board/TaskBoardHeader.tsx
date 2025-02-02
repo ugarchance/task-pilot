@@ -1,7 +1,8 @@
 import { Input } from '@/shared/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
-import { Button } from '@/shared/components/ui/button';
 import { TaskStatus } from '../../types';
+import { Task } from '../../types';
+import { TaskBoardStats } from './TaskBoardStats';
 
 interface TaskBoardHeaderProps {
   searchQuery: string;
@@ -9,8 +10,8 @@ interface TaskBoardHeaderProps {
   statusFilter: TaskStatus | 'ALL';
   onStatusFilterChange: (value: TaskStatus | 'ALL') => void;
   columns: { id: TaskStatus; title: string }[];
-  onAddTask: () => void;
   hideFilters?: boolean;
+  tasks: Task[];
 }
 
 export function TaskBoardHeader({
@@ -19,8 +20,8 @@ export function TaskBoardHeader({
   statusFilter,
   onStatusFilterChange,
   columns,
-  onAddTask,
-  hideFilters = false
+  hideFilters = false,
+  tasks
 }: TaskBoardHeaderProps) {
   return (
     <div className="flex flex-col md:flex-row items-center justify-between gap-3">
@@ -44,16 +45,9 @@ export function TaskBoardHeader({
             </SelectContent>
           </Select>
         )}
+          <TaskBoardStats tasks={tasks} columns={columns} />
       </div>
-
-      <Button
-        onClick={onAddTask}
-        className="h-7 px-2.5 bg-[#004e89]/90 hover:bg-[#004e89] text-white text-xs font-medium rounded-md transition-all duration-200 hover:shadow-sm flex items-center gap-1.5"
-        size="sm"
-      >
-        <span className="material-icons text-[14px]">add</span>
-        Yeni Görev
-      </Button>
+   
     </div>
   );
 } 

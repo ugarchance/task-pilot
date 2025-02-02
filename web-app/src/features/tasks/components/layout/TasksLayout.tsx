@@ -1,54 +1,54 @@
+'use client';
+
 import { ReactNode } from 'react';
 import { Card } from '@/shared/components/ui/card';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 
 interface TasksLayoutProps {
   children: ReactNode;
 }
 
 export default function TasksLayout({ children }: TasksLayoutProps) {
+  const pathname = usePathname();
+
+  const menuItems = [
+    { href: '/tasks', icon: 'list', label: 'Tüm Görevler' },
+    { href: '/tasks/active', icon: 'play_circle', label: 'Aktif Görevler' },
+    { href: '/tasks/completed', icon: 'check_circle', label: 'Tamamlanan Görevler' },
+  ];
+
   return (
-    <div className="h-screen overflow-hidden bg-[#efefd0]">
-      {/* Üst Menü */}
-      <header className="bg-[#004e89] text-white h-12 shadow-sm backdrop-blur-sm bg-opacity-95 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto h-full px-4 flex justify-between items-center">
-          <h1 className="text-lg font-medium tracking-tight">Task Pilot</h1>
-          <nav className="flex items-center space-x-8">
-            <a href="/tasks" className="text-sm font-medium hover:text-[#f7c59f] transition-all duration-200 hover:scale-105">Görevler</a>
-            <a href="/tasks/analytics" className="text-sm font-medium hover:text-[#f7c59f] transition-all duration-200 hover:scale-105">Analitik</a>
-          </nav>
-        </div>
-      </header>
+    <div className="flex h-[calc(100vh-4rem)] overflow-hidden">
+      <aside className="w-56 bg-white shadow-lg">
+        <nav className="p-3 space-y-1.5">
+          {menuItems.map((item) => (
+            <Card 
+              key={item.href}
+              className={`p-2.5 cursor-pointer transition-colors ${
+                pathname === item.href 
+                  ? 'bg-blue-50 border-blue-200' 
+                  : 'hover:bg-[#efefd0]'
+              }`}
+            >
+              <Link href={item.href} className="flex items-center space-x-2 text-sm">
+                <span className={`material-icons text-[18px] ${
+                  pathname === item.href ? 'text-blue-600' : ''
+                }`}>
+                  {item.icon}
+                </span>
+                <span className={pathname === item.href ? 'text-blue-600 font-medium' : ''}>
+                  {item.label}
+                </span>
+              </Link>
+            </Card>
+          ))}
+        </nav>
+      </aside>
 
-      {/* Sol Menü */}
-      <div className="flex h-[calc(100vh-3rem)]">
-        <aside className="w-56 bg-white shadow-lg">
-          <nav className="p-3 space-y-1.5">
-            <Card className="p-2.5 hover:bg-[#efefd0] cursor-pointer transition-colors">
-              <a href="/tasks" className="flex items-center space-x-2 text-sm">
-                <span className="material-icons text-[18px]">list</span>
-                <span>Tüm Görevler</span>
-              </a>
-            </Card>
-            <Card className="p-2.5 hover:bg-[#efefd0] cursor-pointer transition-colors">
-              <a href="/tasks/active" className="flex items-center space-x-2 text-sm">
-                <span className="material-icons text-[18px]">play_circle</span>
-                <span>Aktif Görevler</span>
-              </a>
-            </Card>
-            <Card className="p-2.5 hover:bg-[#efefd0] cursor-pointer transition-colors">
-              <a href="/tasks/completed" className="flex items-center space-x-2 text-sm">
-                <span className="material-icons text-[18px]">check_circle</span>
-                <span>Tamamlanan Görevler</span>
-              </a>
-            </Card>
-          </nav>
-        </aside>
-
-        {/* Ana İçerik */}
-        <main className="flex-1 p-4 overflow-auto">
-          {children}
-        </main>
-      </div>
+      <main className="flex-1 min-h-0">
+        {children}
+      </main>
     </div>
   );
 } 

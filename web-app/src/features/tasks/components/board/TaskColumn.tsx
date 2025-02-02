@@ -57,12 +57,11 @@ export function TaskColumnComponent({ column, onEditTask, onDeleteTask, singleCo
 
   return (
     <Card className={cn(
-      "flex flex-col shadow-sm",
-      singleColumnMode ? "h-[calc(100vh-16rem)]" : "h-[calc(100vh-12rem)]",
+      "flex flex-col shadow-sm h-[calc(95vh-12rem)]",
       getColumnColor(column.id)
     )}>
       <div className={cn(
-        "py-2 px-3 border-b",
+        "py-2 px-3 border-b shrink-0",
         getColumnHeaderColor(column.id)
       )}>
         <div className="flex items-center justify-between">
@@ -79,7 +78,7 @@ export function TaskColumnComponent({ column, onEditTask, onDeleteTask, singleCo
       <div
         ref={setNodeRef}
         className={cn(
-          "flex-1 p-2 space-y-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent hover:scrollbar-thumb-gray-300",
+          "flex-1 p-2 space-y-2 overflow-y-auto min-h-0 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent hover:scrollbar-thumb-gray-300",
           singleColumnMode && "px-4"
         )}
       >
