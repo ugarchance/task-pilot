@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { TASK_STATUSES } from '../types';
+import { TASK_STATUSES } from '@/features/tasks/types';
 
 export const taskStatusEnum = z.enum(TASK_STATUSES);
 

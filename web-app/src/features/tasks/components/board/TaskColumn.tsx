@@ -4,65 +4,22 @@ import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { TaskCard } from './TaskCard';
 import { Card } from '@/shared/components/ui/card';
-import { Task, TaskStatus } from '../../types';
+import { TaskColumnProps, getColumnColor, getColumnHeaderColor } from '@/features/tasks/types';
 import { cn } from '@/shared/utils/common';
-
-interface TaskColumnProps {
-  column: {
-    id: TaskStatus;
-    title: string;
-    tasks: Task[];
-  };
-  onEditTask: (task: Task) => void;
-  onDeleteTask: (taskId: string) => Promise<void>;
-  singleColumnMode?: boolean;
-}
 
 export function TaskColumnComponent({ column, onEditTask, onDeleteTask, singleColumnMode = false }: TaskColumnProps) {
   const { setNodeRef } = useDroppable({
     id: column.id,
   });
 
-  const getColumnColor = (status: TaskStatus) => {
-    switch (status) {
-      case 'PENDING':
-        return 'border-t-2 border-t-yellow-400 bg-yellow-50/20';
-      case 'IN_PROGRESS':
-        return singleColumnMode 
-          ? 'border-t-2 border-t-[#004e89] bg-blue-50/20' 
-          : 'border-t-2 border-t-blue-400 bg-blue-50/20';
-      case 'COMPLETED':
-        return 'border-t-2 border-t-green-400 bg-green-50/20';
-      case 'CANCELLED':
-        return 'border-t-2 border-t-red-400 bg-red-50/20';
-      default:
-        return '';
-    }
-  };
-
-  const getColumnHeaderColor = (status: TaskStatus) => {
-    switch (status) {
-      case 'PENDING':
-        return 'bg-yellow-50/50';
-      case 'IN_PROGRESS':
-        return singleColumnMode ? 'bg-[#004e89]/5' : 'bg-blue-50/50';
-      case 'COMPLETED':
-        return 'bg-green-50/50';
-      case 'CANCELLED':
-        return 'bg-red-50/50';
-      default:
-        return '';
-    }
-  };
-
   return (
     <Card className={cn(
       "flex flex-col shadow-sm h-[calc(95vh-9rem)]",
-      getColumnColor(column.id)
+      getColumnColor(column.id, singleColumnMode)
     )}>
       <div className={cn(
         "py-1.5 px-2 border-b shrink-0",
-        getColumnHeaderColor(column.id)
+        getColumnHeaderColor(column.id, singleColumnMode)
       )}>
         <div className="flex items-center justify-between">
           <h2 className={cn(

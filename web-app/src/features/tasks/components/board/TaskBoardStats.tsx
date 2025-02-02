@@ -1,32 +1,4 @@
-import { Task, TaskStatus } from '../../types';
-
-interface TaskBoardStatsProps {
-  tasks: Task[];
-  columns: { id: TaskStatus; title: string }[];
-}
-
-const STATUS_COLORS = {
-  PENDING: {
-    bg: 'bg-yellow-50',
-    text: 'text-yellow-700',
-    dot: 'bg-yellow-400',
-  },
-  IN_PROGRESS: {
-    bg: 'bg-blue-50',
-    text: 'text-blue-700',
-    dot: 'bg-blue-400',
-  },
-  COMPLETED: {
-    bg: 'bg-green-50',
-    text: 'text-green-700',
-    dot: 'bg-green-400',
-  },
-  CANCELLED: {
-    bg: 'bg-red-50',
-    text: 'text-red-700',
-    dot: 'bg-red-400',
-  },
-};
+import { TaskBoardStatsProps, STATUS_COLORS } from '@/features/tasks/types';
 
 export function TaskBoardStats({ tasks, columns }: TaskBoardStatsProps) {
   return (

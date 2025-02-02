@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/core/firebase/config';
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
-import { TaskStatus } from '@/features/tasks/types';
-
-const validStatuses: TaskStatus[] = ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'];
+import { TaskStatus, TASK_STATUSES } from '@/features/tasks/types';
 
 export async function PATCH(request: Request) {
   try {
@@ -16,7 +14,7 @@ export async function PATCH(request: Request) {
       );
     }
 
-    if (!status || !validStatuses.includes(status)) {
+    if (!status || !TASK_STATUSES.includes(status as TaskStatus)) {
       return NextResponse.json(
         { error: 'Geçerli bir durum değeri gereklidir' },
         { status: 400 }

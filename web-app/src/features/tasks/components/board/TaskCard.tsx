@@ -1,11 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Card } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
-import { Task } from '../../types';
-import { useState } from 'react';
+import { TaskCardProps, TASK_CARD_STATUS_COLORS, STATUS_LABELS } from '@/features/tasks/types';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,27 +17,6 @@ import {
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
 import { cn } from '@/shared/utils/common';
-
-interface TaskCardProps {
-  task: Task;
-  onEdit: (task: Task) => void;
-  onDelete: (taskId: string) => Promise<void>;
-  singleColumnMode?: boolean;
-}
-
-const STATUS_COLORS = {
-  PENDING: 'bg-yellow-100 text-yellow-800',
-  IN_PROGRESS: 'bg-blue-100 text-blue-800',
-  COMPLETED: 'bg-green-100 text-green-800',
-  CANCELLED: 'bg-red-100 text-red-800',
-};
-
-const STATUS_LABELS = {
-  PENDING: 'Beklemede',
-  IN_PROGRESS: 'Devam Ediyor',
-  COMPLETED: 'Tamamlandı',
-  CANCELLED: 'İptal Edildi',
-};
 
 export function TaskCard({ task, onEdit, onDelete, singleColumnMode = false }: TaskCardProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -114,7 +93,7 @@ export function TaskCard({ task, onEdit, onDelete, singleColumnMode = false }: T
               <div className="flex items-center space-x-1">
                 <span className={cn(
                   "text-[10px] px-1.5 py-0.5 rounded-full",
-                  STATUS_COLORS[task.status]
+                  TASK_CARD_STATUS_COLORS[task.status]
                 )}>
                   {STATUS_LABELS[task.status]}
                 </span>

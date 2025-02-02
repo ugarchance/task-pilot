@@ -3,27 +3,13 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
-import { Task, TaskStatus } from '../../types';
+import { TaskModalProps, STATUS_OPTIONS } from '@/features/tasks/types';
 import { cn } from '@/shared/utils/common';
-
-interface TaskModalProps {
-  task?: Task;
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (data: { title: string; description: string; status: TaskStatus }) => Promise<void>;
-}
-
-const STATUS_OPTIONS: { value: TaskStatus; label: string }[] = [
-  { value: 'PENDING', label: 'Beklemede' },
-  { value: 'IN_PROGRESS', label: 'Devam Ediyor' },
-  { value: 'COMPLETED', label: 'Tamamlandı' },
-  { value: 'CANCELLED', label: 'İptal Edildi' },
-];
 
 export function TaskModal({ task, isOpen, onClose, onSubmit }: TaskModalProps) {
   const [title, setTitle] = useState(task?.title || '');
   const [description, setDescription] = useState(task?.description || '');
-  const [status, setStatus] = useState<TaskStatus>(task?.status || 'PENDING');
+  const [status, setStatus] = useState(task?.status || 'PENDING');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -103,7 +89,7 @@ export function TaskModal({ task, isOpen, onClose, onSubmit }: TaskModalProps) {
             </label>
             <select
               value={status}
-              onChange={(e) => setStatus(e.target.value as TaskStatus)}
+              onChange={(e) => setStatus(e.target.value)}
               className={cn(
                 "w-full px-4 py-2 border border-gray-300 rounded-md",
                 "focus:outline-none focus:ring-2 focus:ring-[#004e89]",

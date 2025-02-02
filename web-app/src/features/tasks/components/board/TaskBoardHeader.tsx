@@ -1,18 +1,7 @@
 import { Input } from '@/shared/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
-import { TaskStatus } from '../../types';
-import { Task } from '../../types';
+import { TaskBoardHeaderProps } from '@/features/tasks/types';
 import { TaskBoardStats } from './TaskBoardStats';
-
-interface TaskBoardHeaderProps {
-  searchQuery: string;
-  onSearchChange: (value: string) => void;
-  statusFilter: TaskStatus | 'ALL';
-  onStatusFilterChange: (value: TaskStatus | 'ALL') => void;
-  columns: { id: TaskStatus; title: string }[];
-  hideFilters?: boolean;
-  tasks: Task[];
-}
 
 export function TaskBoardHeader({
   searchQuery,
@@ -47,7 +36,6 @@ export function TaskBoardHeader({
         )}
           <TaskBoardStats tasks={tasks} columns={columns} />
       </div>
-   
     </div>
   );
 } 

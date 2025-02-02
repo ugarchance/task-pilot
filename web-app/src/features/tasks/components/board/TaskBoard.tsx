@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, MouseSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { Task, TaskStatus } from '@/features/tasks/types';
+import { Task, TaskStatus, DEFAULT_COLUMNS } from '@/features/tasks/types';
 import { TaskColumnComponent } from './TaskColumn';
 import { Card } from '@/shared/components/ui/card';
 import { TaskModal } from '../modals/TaskModal';
@@ -25,13 +25,6 @@ interface TaskBoardProps {
   columns?: { id: TaskStatus; title: string }[];
   singleColumnMode?: boolean;
 }
-
-const DEFAULT_COLUMNS: { id: TaskStatus; title: string }[] = [
-  { id: 'PENDING', title: 'Beklemede' },
-  { id: 'IN_PROGRESS', title: 'Devam Ediyor' },
-  { id: 'COMPLETED', title: 'Tamamlandı' },
-  { id: 'CANCELLED', title: 'İptal Edildi' },
-];
 
 export function TaskBoard({ 
   tasks, 
