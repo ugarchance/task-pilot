@@ -1,4 +1,7 @@
-export type TaskStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+import { z } from 'zod';
+
+export const TASK_STATUSES = ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'] as const;
+export type TaskStatus = typeof TASK_STATUSES[number];
 
 export interface Task {
   id: string;

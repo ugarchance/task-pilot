@@ -10,6 +10,7 @@ import { TaskBoardHeader } from './TaskBoardHeader';
 import { TaskBoardStats } from './TaskBoardStats';
 import { useTaskFilters } from '@/features/tasks/hooks/useTaskFilters';
 import { useDragAndDrop } from '@/features/tasks/hooks/useDragAndDrop';
+import { cn } from '@/shared/utils/common';
 
 interface TaskBoardProps {
   tasks: Task[];
@@ -18,9 +19,12 @@ interface TaskBoardProps {
   onTaskDelete: (taskId: string) => Promise<void>;
   showAddForm: boolean;
   onShowAddFormChange: (show: boolean) => void;
+  loading?: boolean;
+  columns?: { id: TaskStatus; title: string }[];
+  singleColumnMode?: boolean;
 }
 
-const COLUMNS: { id: TaskStatus; title: string }[] = [
+const DEFAULT_COLUMNS: { id: TaskStatus; title: string }[] = [
   { id: 'PENDING', title: 'Beklemede' },
   { id: 'IN_PROGRESS', title: 'Devam Ediyor' },
   { id: 'COMPLETED', title: 'Tamamlandı' },
@@ -33,7 +37,10 @@ export function TaskBoard({
   onTaskUpdate, 
   onTaskDelete,
   showAddForm, 
-  onShowAddFormChange 
+  onShowAddFormChange,
+  loading = false,
+  columns = DEFAULT_COLUMNS,
+  singleColumnMode = false
 }: TaskBoardProps) {
   const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
 
@@ -53,7 +60,7 @@ export function TaskBoard({
     handleDragEnd
   } = useDragAndDrop(tasks, onTaskMove);
 
-  const columns = COLUMNS.map((col) => ({
+  const columnsWithTasks = columns.map((col) => ({
     ...col,
     tasks: filteredTasks.filter((task) => task.status === col.id),
   }));
@@ -78,26 +85,39 @@ export function TaskBoard({
             onSearchChange={setSearchQuery}
             statusFilter={statusFilter}
             onStatusFilterChange={setStatusFilter}
-            columns={COLUMNS}
+            columns={columns}
             onAddTask={() => onShowAddFormChange(true)}
+            hideFilters={singleColumnMode}
           />
-          <TaskBoardStats tasks={tasks} columns={COLUMNS} />
+          <TaskBoardStats tasks={tasks} columns={columns} />
         </div>
       </div>
 
-      <div className="flex-1 p-4 bg-gray-50/50">
+      <div className="flex-1 p-4 bg-gray-50/50 relative">
+        {loading && (
+          <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] flex items-center justify-center z-10">
+            <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-lg shadow-lg">
+              <div className="w-5 h-5 border-2 border-[#004e89] border-t-transparent rounded-full animate-spin" />
+              <span className="text-sm text-gray-600">Yükleniyor...</span>
+            </div>
+          </div>
+        )}
         <DndContext
           sensors={sensors}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 h-full">
-            {columns.map((column) => (
+          <div className={cn(
+            "grid gap-4 h-full",
+            singleColumnMode ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
+          )}>
+            {columnsWithTasks.map((column) => (
               <TaskColumnComponent
                 key={column.id}
                 column={column}
                 onEditTask={handleEditTask}
                 onDeleteTask={onTaskDelete}
+                singleColumnMode={singleColumnMode}
               />
             ))}
           </div>

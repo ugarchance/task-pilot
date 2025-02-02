@@ -1,14 +1,24 @@
 import { z } from 'zod';
-import { TaskStatus } from '../types';
+import { TASK_STATUSES } from '../types';
 
-export const taskSchema = z.object({
-  title: z.string()
-    .min(1, 'Başlık boş olamaz')
-    .max(100, 'Başlık 100 karakterden uzun olamaz'),
-  description: z.string()
-    .max(500, 'Açıklama 500 karakterden uzun olamaz')
-    .optional(),
-  status: z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'] as const),
+export const taskStatusEnum = z.enum(TASK_STATUSES);
+
+export const createTaskSchema = z.object({
+  title: z.string().min(1, 'Başlık zorunludur'),
+  description: z.string(),
+  status: taskStatusEnum.optional().default('PENDING'),
 });
 
-export type TaskFormData = z.infer<typeof taskSchema>; 
+export const updateTaskSchema = z.object({
+  title: z.string().min(1, 'Başlık zorunludur').optional(),
+  description: z.string().optional(),
+  status: taskStatusEnum.optional(),
+});
+
+export const updateTaskStatusSchema = z.object({
+  status: taskStatusEnum,
+});
+
+export type CreateTaskFormData = z.infer<typeof createTaskSchema>;
+export type UpdateTaskFormData = z.infer<typeof updateTaskSchema>;
+export type UpdateTaskStatusFormData = z.infer<typeof updateTaskStatusSchema>; 

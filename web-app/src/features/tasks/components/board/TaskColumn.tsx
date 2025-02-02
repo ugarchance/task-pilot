@@ -5,6 +5,7 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { TaskCard } from './TaskCard';
 import { Card } from '@/shared/components/ui/card';
 import { Task, TaskStatus } from '../../types';
+import { cn } from '@/shared/utils/common';
 
 interface TaskColumnProps {
   column: {
@@ -14,9 +15,10 @@ interface TaskColumnProps {
   };
   onEditTask: (task: Task) => void;
   onDeleteTask: (taskId: string) => Promise<void>;
+  singleColumnMode?: boolean;
 }
 
-export function TaskColumnComponent({ column, onEditTask, onDeleteTask }: TaskColumnProps) {
+export function TaskColumnComponent({ column, onEditTask, onDeleteTask, singleColumnMode = false }: TaskColumnProps) {
   const { setNodeRef } = useDroppable({
     id: column.id,
   });
@@ -26,7 +28,9 @@ export function TaskColumnComponent({ column, onEditTask, onDeleteTask }: TaskCo
       case 'PENDING':
         return 'border-t-2 border-t-yellow-400 bg-yellow-50/20';
       case 'IN_PROGRESS':
-        return 'border-t-2 border-t-blue-400 bg-blue-50/20';
+        return singleColumnMode 
+          ? 'border-t-2 border-t-[#004e89] bg-blue-50/20' 
+          : 'border-t-2 border-t-blue-400 bg-blue-50/20';
       case 'COMPLETED':
         return 'border-t-2 border-t-green-400 bg-green-50/20';
       case 'CANCELLED':
@@ -41,7 +45,7 @@ export function TaskColumnComponent({ column, onEditTask, onDeleteTask }: TaskCo
       case 'PENDING':
         return 'bg-yellow-50/50';
       case 'IN_PROGRESS':
-        return 'bg-blue-50/50';
+        return singleColumnMode ? 'bg-[#004e89]/5' : 'bg-blue-50/50';
       case 'COMPLETED':
         return 'bg-green-50/50';
       case 'CANCELLED':
@@ -52,10 +56,20 @@ export function TaskColumnComponent({ column, onEditTask, onDeleteTask }: TaskCo
   };
 
   return (
-    <Card className={`flex flex-col h-[calc(100vh-12rem)] shadow-sm ${getColumnColor(column.id)}`}>
-      <div className={`py-2 px-3 border-b ${getColumnHeaderColor(column.id)}`}>
+    <Card className={cn(
+      "flex flex-col shadow-sm",
+      singleColumnMode ? "h-[calc(100vh-16rem)]" : "h-[calc(100vh-12rem)]",
+      getColumnColor(column.id)
+    )}>
+      <div className={cn(
+        "py-2 px-3 border-b",
+        getColumnHeaderColor(column.id)
+      )}>
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-medium text-[#004e89]">{column.title}</h2>
+          <h2 className={cn(
+            "text-sm font-medium",
+            singleColumnMode ? "text-[#004e89]" : "text-gray-700"
+          )}>{column.title}</h2>
           <span className="text-xs font-medium text-gray-500 bg-white/50 px-2 py-0.5 rounded">
             {column.tasks.length}
           </span>
@@ -64,7 +78,10 @@ export function TaskColumnComponent({ column, onEditTask, onDeleteTask }: TaskCo
 
       <div
         ref={setNodeRef}
-        className="flex-1 p-2 space-y-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent hover:scrollbar-thumb-gray-300"
+        className={cn(
+          "flex-1 p-2 space-y-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent hover:scrollbar-thumb-gray-300",
+          singleColumnMode && "px-4"
+        )}
       >
         <SortableContext
           items={column.tasks.map(task => task.id)}
@@ -76,6 +93,7 @@ export function TaskColumnComponent({ column, onEditTask, onDeleteTask }: TaskCo
               task={task} 
               onEdit={onEditTask}
               onDelete={onDeleteTask}
+              singleColumnMode={singleColumnMode}
             />
           ))}
         </SortableContext>

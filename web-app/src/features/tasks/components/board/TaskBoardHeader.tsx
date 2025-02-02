@@ -10,6 +10,7 @@ interface TaskBoardHeaderProps {
   onStatusFilterChange: (value: TaskStatus | 'ALL') => void;
   columns: { id: TaskStatus; title: string }[];
   onAddTask: () => void;
+  hideFilters?: boolean;
 }
 
 export function TaskBoardHeader({
@@ -18,7 +19,8 @@ export function TaskBoardHeader({
   statusFilter,
   onStatusFilterChange,
   columns,
-  onAddTask
+  onAddTask,
+  hideFilters = false
 }: TaskBoardHeaderProps) {
   return (
     <div className="flex flex-col md:flex-row items-center justify-between gap-3">
@@ -29,17 +31,19 @@ export function TaskBoardHeader({
           onChange={(e) => onSearchChange(e.target.value)}
           className="w-full md:w-[240px] h-7 text-sm"
         />
-        <Select value={statusFilter} onValueChange={onStatusFilterChange}>
-          <SelectTrigger className="w-[130px] h-7 text-sm">
-            <SelectValue placeholder="Filtrele" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">Tümü</SelectItem>
-            {columns.map(col => (
-              <SelectItem key={col.id} value={col.id}>{col.title}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        {!hideFilters && (
+          <Select value={statusFilter} onValueChange={onStatusFilterChange}>
+            <SelectTrigger className="w-[130px] h-7 text-sm">
+              <SelectValue placeholder="Filtrele" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">Tümü</SelectItem>
+              {columns.map(col => (
+                <SelectItem key={col.id} value={col.id}>{col.title}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
       </div>
 
       <Button

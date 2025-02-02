@@ -16,11 +16,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/shared/components/ui/alert-dialog";
+import { cn
+ } from '@/shared/utils/common';
 
 interface TaskCardProps {
   task: Task;
   onEdit: (task: Task) => void;
   onDelete: (taskId: string) => Promise<void>;
+  singleColumnMode?: boolean;
 }
 
 const STATUS_COLORS = {
@@ -37,7 +40,7 @@ const STATUS_LABELS = {
   CANCELLED: 'İptal Edildi',
 };
 
-export function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
+export function TaskCard({ task, onEdit, onDelete, singleColumnMode = false }: TaskCardProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -87,14 +90,19 @@ export function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
       <div
         ref={setNodeRef}
         style={style}
-        className={`p-4 cursor-grab active:cursor-grabbing ${
-          isDragging ? 'opacity-50' : ''
-        }`}
+        className={cn(
+          "cursor-grab active:cursor-grabbing",
+          singleColumnMode ? "px-0 py-2" : "p-4",
+          isDragging ? "opacity-50" : ""
+        )}
         {...attributes}
         {...listeners}
       >
         <Card 
-          className="p-4 transition-all duration-200 hover:shadow-lg hover:border-[#004e89] group"
+          className={cn(
+            "transition-all duration-200 hover:shadow-lg hover:border-[#004e89] group",
+            singleColumnMode ? "p-5" : "p-4"
+          )}
           onClick={() => onEdit(task)}
         >
           <div className="space-y-2">
@@ -106,7 +114,10 @@ export function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
                   onEdit(task);
                 }}
               >
-                <h3 className="font-semibold text-[#004e89]">{task.title}</h3>
+                <h3 className={cn(
+                  "font-semibold text-[#004e89]",
+                  singleColumnMode && "text-lg"
+                )}>{task.title}</h3>
                 <span className={`text-xs px-2 py-1 rounded-full ${STATUS_COLORS[task.status]}`}>
                   {STATUS_LABELS[task.status]}
                 </span>
@@ -123,8 +134,11 @@ export function TaskCard({ task, onEdit, onDelete }: TaskCardProps) {
                 <span className="material-icons text-red-500/70 hover:text-red-600 text-[16px]">delete_outline</span>
               </Button>
             </div>
-            
-            <p className="text-sm text-gray-600 line-clamp-2">{task.description}</p>
+
+            <p className={cn(
+              "text-gray-600 line-clamp-2",
+              singleColumnMode ? "text-base" : "text-sm"
+            )}>{task.description}</p>
             
             <div className="flex items-center justify-between text-xs text-gray-500">
               <div className="flex items-center space-x-2">
