@@ -1,6 +1,23 @@
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import { Task, TaskStatus } from '../types';
-import { taskService } from '../services/taskService';
+import { useAppDispatch } from '@/shared/hooks/useAppDispatch';
+import { useAppSelector } from '@/shared/hooks/useAppSelector';
+import {
+  fetchTasks,
+  fetchActiveTasks,
+  fetchCompletedTasks,
+  createTask,
+  updateTaskStatus,
+  updateTask,
+  deleteTask,
+  clearError,
+  startOptimisticUpdate,
+  startOptimisticCreate,
+  revertOptimisticCreate,
+  startOptimisticDelete,
+  revertOptimisticDelete,
+} from '../store/taskSlice';
+import { toast } from 'sonner';
 
 interface UseTasksReturn {
   // State
@@ -22,139 +39,134 @@ interface UseTasksReturn {
 }
 
 export function useTasks(): UseTasksReturn {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Hata yönetimi için yardımcı fonksiyon
-  const handleError = (error: unknown) => {
-    const errorMessage = error instanceof Error ? error.message : 'Beklenmeyen bir hata oluştu';
-    setError(errorMessage);
-    setLoading(false);
-  };
+  const dispatch = useAppDispatch();
+  const { items: tasks, loading, error } = useAppSelector((state) => state.tasks);
 
   // Tüm görevleri getir
-  const fetchTasks = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const fetchedTasks = await taskService.getAllTasks();
-      setTasks(fetchedTasks);
-    } catch (error) {
-      handleError(error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const handleFetchTasks = useCallback(async () => {
+    await dispatch(fetchTasks());
+  }, [dispatch]);
 
   // Aktif görevleri getir
-  const fetchActiveTasks = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const activeTasks = await taskService.getActiveTasks();
-      setTasks(activeTasks);
-    } catch (error) {
-      handleError(error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const handleFetchActiveTasks = useCallback(async () => {
+    await dispatch(fetchActiveTasks());
+  }, [dispatch]);
 
   // Tamamlanmış görevleri getir
-  const fetchCompletedTasks = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const completedTasks = await taskService.getCompletedTasks();
-      setTasks(completedTasks);
-    } catch (error) {
-      handleError(error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const handleFetchCompletedTasks = useCallback(async () => {
+    await dispatch(fetchCompletedTasks());
+  }, [dispatch]);
 
-  // Yeni görev oluştur
-  const createTask = useCallback(async (data: { title: string; description: string }) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const newTask = await taskService.createTask(data);
-      setTasks(prevTasks => [...prevTasks, newTask]);
-    } catch (error) {
-      handleError(error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  // Yeni görev oluştur (optimistik)
+  const handleCreateTask = useCallback(async (data: { title: string; description: string }) => {
+    // Yükleme toast'ını göster
+    const toastId = toast.loading('Görev oluşturuluyor...', {
+      duration: Infinity, // Sonsuz süre
+    });
 
-  // Görev durumunu güncelle
-  const updateTaskStatus = useCallback(async (taskId: string, status: TaskStatus) => {
     try {
-      setError(null);
+      // Geçici görev oluştur
+      const tempTask: Task = {
+        id: 'temp',
+        title: data.title,
+        description: data.description,
+        status: 'PENDING',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      // Optimistik güncelleme yap
+      dispatch(startOptimisticCreate(tempTask));
       
-      // Optimistik güncelleme
-      setTasks(prevTasks =>
-        prevTasks.map(task => (task.id === taskId ? { ...task, status } : task))
-      );
+      // API çağrısını yap
+      await dispatch(createTask(data));
 
-      // API çağrısı
-      const updatedTask = await taskService.updateTaskStatus(taskId, status);
-      
-      // API'den gelen güncel veriyle state'i güncelle
-      setTasks(prevTasks =>
-        prevTasks.map(task => (task.id === taskId ? updatedTask : task))
-      );
+      // Başarılı durumunda yükleme toast'ını güncelle
+      toast.success('Görev başarıyla oluşturuldu!', {
+        id: toastId,
+        duration: 2000,
+        icon: '✅',
+        description: `"${data.title}" görevi eklendi.`
+      });
     } catch (error) {
-      // Hata durumunda eski state'e geri dön
-      const originalTask = tasks.find(task => task.id === taskId);
-      if (originalTask) {
-        setTasks(prevTasks =>
-          prevTasks.map(task => (task.id === taskId ? originalTask : task))
-        );
-      }
-      handleError(error);
+      console.error('Görev oluşturulurken hata:', error);
+      
+      // Hata durumunda yükleme toast'ını güncelle
+      toast.error('Görev oluşturulamadı!', {
+        id: toastId,
+        duration: 3000,
+        icon: '❌',
+        description: 'Bir hata oluştu, lütfen tekrar deneyin.'
+      });
+      
+      // Hata durumunda optimistik güncellemeyi geri al
+      dispatch(revertOptimisticCreate('temp'));
     }
-  }, [tasks]);
+  }, [dispatch]);
+
+  // Görev durumunu güncelle (optimistik)
+  const handleUpdateTaskStatus = useCallback(async (taskId: string, status: TaskStatus) => {
+    try {
+      // Önce optimistik güncelleme yap
+      dispatch(startOptimisticUpdate({ taskId, status }));
+      
+      // Sonra API çağrısını yap
+      await dispatch(updateTaskStatus({ taskId, status }));
+    } catch (error) {
+      // Hata durumunda slice içindeki rejected case otomatik olarak
+      // optimistik güncellemeyi geri alacak
+      console.error('Görev durumu güncellenirken hata:', error);
+    }
+  }, [dispatch]);
 
   // Görevi güncelle
-  const updateTask = useCallback(async (
+  const handleUpdateTask = useCallback(async (
     taskId: string,
     data: { title: string; description: string; status: TaskStatus }
   ) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const updatedTask = await taskService.updateTask(taskId, data);
-      setTasks(prevTasks =>
-        prevTasks.map(task => (task.id === taskId ? updatedTask : task))
-      );
-    } catch (error) {
-      handleError(error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    await dispatch(updateTask({ taskId, data }));
+  }, [dispatch]);
 
-  // Görevi sil
-  const deleteTask = useCallback(async (taskId: string) => {
+  // Görevi sil (optimistik)
+  const handleDeleteTask = useCallback(async (taskId: string) => {
+    // Yükleme toast'ını göster
+    const toastId = toast.loading('Görev siliniyor...', {
+      duration: Infinity,
+    });
+
     try {
-      setLoading(true);
-      setError(null);
-      await taskService.deleteTask(taskId);
-      setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+      // Önce optimistik silme yap
+      dispatch(startOptimisticDelete({ taskId }));
+      
+      // Sonra API çağrısını yap
+      await dispatch(deleteTask(taskId));
+
+      // Başarılı durumunda toast'ı güncelle
+      toast.success('Görev başarıyla silindi!', {
+        id: toastId,
+        duration: 2000,
+        icon: '✅'
+      });
     } catch (error) {
-      handleError(error);
-    } finally {
-      setLoading(false);
+      console.error('Görev silinirken hata:', error);
+      
+      // Hata durumunda toast'ı güncelle
+      toast.error('Görev silinemedi!', {
+        id: toastId,
+        duration: 3000,
+        icon: '❌',
+        description: 'Bir hata oluştu, lütfen tekrar deneyin.'
+      });
+
+      // Hata durumunda optimistik silmeyi geri al
+      dispatch(revertOptimisticDelete({ taskId }));
     }
-  }, []);
+  }, [dispatch]);
 
   // Hata temizleme
-  const clearError = useCallback(() => {
-    setError(null);
-  }, []);
+  const handleClearError = useCallback(() => {
+    dispatch(clearError());
+  }, [dispatch]);
 
   return {
     // State
@@ -163,15 +175,15 @@ export function useTasks(): UseTasksReturn {
     error,
 
     // Metodlar
-    fetchTasks,
-    fetchActiveTasks,
-    fetchCompletedTasks,
-    createTask,
-    updateTaskStatus,
-    updateTask,
-    deleteTask,
+    fetchTasks: handleFetchTasks,
+    fetchActiveTasks: handleFetchActiveTasks,
+    fetchCompletedTasks: handleFetchCompletedTasks,
+    createTask: handleCreateTask,
+    updateTaskStatus: handleUpdateTaskStatus,
+    updateTask: handleUpdateTask,
+    deleteTask: handleDeleteTask,
 
     // Yardımcı metodlar
-    clearError,
+    clearError: handleClearError,
   };
 } 

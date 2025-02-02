@@ -16,6 +16,7 @@ export default function ActiveTasksPage() {
     loading,
     error,
     fetchActiveTasks,
+    createTask,
     updateTaskStatus,
     updateTask,
     deleteTask,
@@ -38,6 +39,11 @@ export default function ActiveTasksPage() {
     await deleteTask(taskId);
   };
 
+  const handleTaskCreate = async (data: { title: string; description: string }) => {
+    await createTask(data);
+    await fetchActiveTasks(); // Yeni görev oluşturulduktan sonra listeyi güncelle
+  };
+
   if (error) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -57,6 +63,7 @@ export default function ActiveTasksPage() {
         onTaskMove={handleTaskMove}
         onTaskUpdate={handleTaskUpdate}
         onTaskDelete={handleTaskDelete}
+        onTaskCreate={handleTaskCreate}
         showAddForm={showAddForm}
         onShowAddFormChange={setShowAddForm}
         loading={loading}

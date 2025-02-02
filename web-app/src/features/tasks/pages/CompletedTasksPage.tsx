@@ -16,6 +16,7 @@ export default function CompletedTasksPage() {
     loading,
     error,
     fetchCompletedTasks,
+    createTask,
     updateTaskStatus,
     updateTask,
     deleteTask,
@@ -38,6 +39,11 @@ export default function CompletedTasksPage() {
     await deleteTask(taskId);
   };
 
+  const handleTaskCreate = async (data: { title: string; description: string }) => {
+    await createTask(data);
+    await fetchCompletedTasks(); // Yeni görev oluşturulduktan sonra listeyi güncelle
+  };
+
   if (error) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -57,6 +63,7 @@ export default function CompletedTasksPage() {
         onTaskMove={handleTaskMove}
         onTaskUpdate={handleTaskUpdate}
         onTaskDelete={handleTaskDelete}
+        onTaskCreate={handleTaskCreate}
         showAddForm={showAddForm}
         onShowAddFormChange={setShowAddForm}
         loading={loading}

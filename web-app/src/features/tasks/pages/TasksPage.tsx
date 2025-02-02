@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { TaskBoard } from '../components/board/TaskBoard';
 import { useTasks } from '../hooks/useTasks';
 import { TaskStatus } from '../types';
 
 export default function TasksPage() {
+  const [showAddForm, setShowAddForm] = useState(false);
   const {
     tasks,
     loading,
@@ -66,7 +67,9 @@ export default function TasksPage() {
         onTaskUpdate={handleTaskUpdate}
         onTaskDelete={handleTaskDelete}
         onTaskCreate={handleTaskCreate}
-        isLoading={loading}
+        showAddForm={showAddForm}
+        onShowAddFormChange={setShowAddForm}
+        loading={loading}
       />
     </div>
   );

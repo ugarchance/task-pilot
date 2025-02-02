@@ -17,6 +17,7 @@ interface TaskBoardProps {
   onTaskMove: (taskId: string, newStatus: TaskStatus) => Promise<void>;
   onTaskUpdate: (taskId: string, data: { title: string; description: string; status: TaskStatus }) => Promise<void>;
   onTaskDelete: (taskId: string) => Promise<void>;
+  onTaskCreate: (data: { title: string; description: string }) => Promise<void>;
   showAddForm: boolean;
   onShowAddFormChange: (show: boolean) => void;
   loading?: boolean;
@@ -36,6 +37,7 @@ export function TaskBoard({
   onTaskMove, 
   onTaskUpdate, 
   onTaskDelete,
+  onTaskCreate,
   showAddForm, 
   onShowAddFormChange,
   loading = false,
@@ -73,6 +75,9 @@ export function TaskBoard({
     if (editingTask) {
       await onTaskUpdate(editingTask.id, data);
       setEditingTask(undefined);
+    } else {
+      await onTaskCreate({ title: data.title, description: data.description });
+      onShowAddFormChange(false);
     }
   };
 
