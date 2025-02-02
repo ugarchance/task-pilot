@@ -16,6 +16,32 @@ import { useAuth } from '../hooks/useAuth';
 import { RegisterFormValues, registerSchema } from '../validation/authSchema';
 import { toast } from 'sonner';
 import { ControllerRenderProps } from 'react-hook-form';
+import { motion } from 'framer-motion';
+import { FiMail, FiLock, FiUser, FiShield } from 'react-icons/fi';
+import { IconType } from 'react-icons';
+
+const formAnimation = {
+  hidden: { opacity: 0, y: 20 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemAnimation = {
+  hidden: { opacity: 0, x: -20 },
+  show: { opacity: 1, x: 0 },
+};
+
+const IconWrapper = ({ Icon }: { Icon: IconType }) => (
+  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 transition-colors group-hover:text-blue-400">
+    <Icon size={18} />
+  </div>
+);
 
 export function RegisterForm() {
   const { register, loading } = useAuth();
@@ -39,53 +65,106 @@ export function RegisterForm() {
   };
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      className="space-y-6 p-6"
+      initial="hidden"
+      animate="show"
+      variants={formAnimation}
+    >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }: { field: ControllerRenderProps<RegisterFormValues, 'email'> }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input placeholder="ornek@email.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }: { field: ControllerRenderProps<RegisterFormValues, 'password'> }) => (
-              <FormItem>
-                <FormLabel>Şifre</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="******" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="confirmPassword"
-            render={({ field }: { field: ControllerRenderProps<RegisterFormValues, 'confirmPassword'> }) => (
-              <FormItem>
-                <FormLabel>Şifre Tekrar</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="******" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Kayıt olunuyor...' : 'Kayıt Ol'}
-          </Button>
+          <motion.div variants={itemAnimation}>
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }: { field: ControllerRenderProps<RegisterFormValues, 'email'> }) => (
+                <FormItem>
+                  <FormLabel className="text-gray-300">Email</FormLabel>
+                  <FormControl>
+                    <div className="relative group">
+                      <IconWrapper Icon={FiMail} />
+                      <Input
+                        placeholder="ornek@email.com"
+                        className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-400 transition-all group-hover:border-blue-400/50"
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </motion.div>
+
+          <motion.div variants={itemAnimation}>
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }: { field: ControllerRenderProps<RegisterFormValues, 'password'> }) => (
+                <FormItem>
+                  <FormLabel className="text-gray-300">Şifre</FormLabel>
+                  <FormControl>
+                    <div className="relative group">
+                      <IconWrapper Icon={FiLock} />
+                      <Input
+                        type="password"
+                        placeholder="******"
+                        className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-400 transition-all group-hover:border-blue-400/50"
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </motion.div>
+
+          <motion.div variants={itemAnimation}>
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }: { field: ControllerRenderProps<RegisterFormValues, 'confirmPassword'> }) => (
+                <FormItem>
+                  <FormLabel className="text-gray-300">Şifre Tekrar</FormLabel>
+                  <FormControl>
+                    <div className="relative group">
+                      <IconWrapper Icon={FiShield} />
+                      <Input
+                        type="password"
+                        placeholder="******"
+                        className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-400 transition-all group-hover:border-blue-400/50"
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </motion.div>
+
+          <motion.div
+            variants={itemAnimation}
+            className="pt-2"
+          >
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white transition-all duration-200 relative overflow-hidden group"
+            >
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-blue-400 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                initial={false}
+                animate={{ opacity: loading ? 1 : 0 }}
+              />
+              <span className="relative">
+                {loading ? 'Kayıt olunuyor...' : 'Kayıt Ol'}
+              </span>
+            </Button>
+          </motion.div>
         </form>
       </Form>
-    </div>
+    </motion.div>
   );
 } 

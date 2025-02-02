@@ -19,8 +19,8 @@ export default function TasksLayout({ children }: TasksLayoutProps) {
   ];
 
   return (
-    <div className="flex h-[calc(100vh-3rem)] overflow-hidden">
-      <aside className="w-48 bg-white shadow-lg">
+    <div className="flex h-full bg-white">
+      <aside className="w-48 border-r">
         <nav className="p-2 space-y-1">
           {menuItems.map((item) => (
             <Card 
@@ -46,7 +46,7 @@ export default function TasksLayout({ children }: TasksLayoutProps) {
         </nav>
       </aside>
 
-      <main className="flex-1 min-h-0">
+      <main className="flex-1 p-4">
         {children}
       </main>
     </div>
