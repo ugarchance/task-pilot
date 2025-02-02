@@ -28,7 +28,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
             {children}
           </main>
           {!isAuthPage && (
-            <footer className="h-10 border-t">
+            <footer className="h-10 border-t bg-white">
               <Footer />
             </footer>
           )}

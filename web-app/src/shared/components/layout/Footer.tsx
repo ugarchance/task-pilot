@@ -14,7 +14,7 @@ export default function Footer() {
               rel="noreferrer"
               className="text-blue-600 hover:text-blue-500 transition-colors font-medium"
             >
-              Ahmet Ugar & Hakan Yavuzaslanoğlu
+              ugarchance & mryavuzaslanoglu
             </a>
           </span>
         </div>
@@ -31,7 +31,7 @@ export default function Footer() {
           </a>
           <div className="flex items-center gap-1 text-xs text-gray-500">
             <span className="material-icons text-[14px] text-blue-600">copyright</span>
-            2024 Task Pilot
+            2025 Task Pilot
           </div>
         </div>
       </div>
