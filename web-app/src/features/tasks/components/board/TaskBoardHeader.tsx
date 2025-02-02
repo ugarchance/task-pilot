@@ -1,7 +1,7 @@
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { TaskStatus } from '@/types/task';
+import { Input } from '@/shared/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
+import { Button } from '@/shared/components/ui/button';
+import { TaskStatus } from '../../types';
 
 interface TaskBoardHeaderProps {
   searchQuery: string;

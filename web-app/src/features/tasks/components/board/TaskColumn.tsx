@@ -3,8 +3,8 @@
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { TaskCard } from './TaskCard';
-import { Card } from '@/components/ui/card';
-import { Task, TaskColumn, TaskStatus } from '@/types/task';
+import { Card } from '@/shared/components/ui/card';
+import { Task, TaskStatus } from '../../types';
 
 interface TaskColumnProps {
   column: {

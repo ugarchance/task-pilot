@@ -2,10 +2,9 @@
 
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Task } from '@/types/task';
-import { forwardRef } from 'react';
+import { Card } from '@/shared/components/ui/card';
+import { Button } from '@/shared/components/ui/button';
+import { Task } from '../../types';
 import { useState } from 'react';
 import {
   AlertDialog,
@@ -16,7 +15,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "@/shared/components/ui/alert-dialog";
 
 interface TaskCardProps {
   task: Task;

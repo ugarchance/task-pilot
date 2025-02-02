@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/firebase/config';
+import { db } from '@/core/firebase/config';
 import { doc, updateDoc } from 'firebase/firestore';
-import { TaskStatus } from '@/types/task';
+
 
 export async function PATCH(request: Request) {
   try {

@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/firebase/config';
+import { db } from '@/core/firebase/config';
 import { collection, addDoc } from 'firebase/firestore';
-import { TaskStatus } from '@/types/task';
 
 export async function POST(request: Request) {
   try {

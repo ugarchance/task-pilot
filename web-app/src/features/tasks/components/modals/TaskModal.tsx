@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Task, TaskStatus } from '@/types/task';
-import { cn } from '@/lib/utils';
+import { Button } from '@/shared/components/ui/button';
+import { Input } from '@/shared/components/ui/input';
+import { Task, TaskStatus } from '../../types';
+import { cn } from '@/shared/utils/common';
 
 interface TaskModalProps {
   task?: Task;

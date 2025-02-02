@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/firebase/config';
+import { db } from '@/core/firebase/config';
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
-import { TaskStatus } from '@/types/task';
+import { TaskStatus } from '@/features/tasks/types';
 
 const validStatuses: TaskStatus[] = ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'];
 

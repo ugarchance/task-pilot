@@ -2,14 +2,14 @@
 
 import { useState } from 'react';
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, MouseSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { Task, TaskStatus } from '@/types/task';
+import { Task, TaskStatus } from '@/features/tasks/types';
 import { TaskColumnComponent } from './TaskColumn';
-import { Card } from '@/components/ui/card';
+import { Card } from '@/shared/components/ui/card';
 import { TaskModal } from '../modals/TaskModal';
 import { TaskBoardHeader } from './TaskBoardHeader';
 import { TaskBoardStats } from './TaskBoardStats';
-import { useTaskFilters } from '@/hooks/useTaskFilters';
-import { useDragAndDrop } from '@/hooks/useDragAndDrop';
+import { useTaskFilters } from '@/features/tasks/hooks/useTaskFilters';
+import { useDragAndDrop } from '@/features/tasks/hooks/useDragAndDrop';
 
 interface TaskBoardProps {
   tasks: Task[];

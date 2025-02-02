@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { TaskBoard } from '@/components/tasks/board/TaskBoard';
-import { Task, TaskStatus } from '@/types/task';
-import { TaskModal } from '@/components/tasks/modals/TaskModal';
+import { TaskBoard } from '@/features/tasks/components/board/TaskBoard';
+import { Task, TaskStatus } from '@/features/tasks/types';
+import { TaskModal } from '@/features/tasks/components/modals/TaskModal';
 
 export default function TasksPage() {
   const [title, setTitle] = useState('');

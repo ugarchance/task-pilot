@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { DragEndEvent, DragStartEvent, MouseSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { Task, TaskStatus } from '@/types/task';
+import { Task, TaskStatus } from '../types';
 
 export function useDragAndDrop(
   tasks: Task[],
