@@ -69,3 +69,5 @@ node_modules/
 # dataconnect generated files
 .dataconnect
 .cursor/rules/ses.mdc
+.cursor/rules/son.mdc
+.cursorrules

@@ -55,17 +55,19 @@ export default function TasksPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <TaskBoard
-        tasks={tasks}
-        onTaskMove={handleTaskMove}
-        onTaskUpdate={handleTaskUpdate}
-        onTaskDelete={handleTaskDelete}
-        onTaskCreate={handleTaskCreate}
-        showAddForm={showAddForm}
-        onShowAddFormChange={setShowAddForm}
-        loading={loading}
-      />
+    <div className="min-h-screen bg-gray-50">
+      <div className="p-4">
+        <TaskBoard
+          tasks={tasks}
+          onTaskMove={handleTaskMove}
+          onTaskUpdate={handleTaskUpdate}
+          onTaskDelete={handleTaskDelete}
+          onTaskCreate={handleTaskCreate}
+          showAddForm={showAddForm}
+          onShowAddFormChange={setShowAddForm}
+          loading={loading}
+        />
+      </div>
     </div>
   );
 } 
