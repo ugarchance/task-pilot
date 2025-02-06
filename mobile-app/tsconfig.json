@@ -1,6 +1,21 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true
-  }
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "expo-router": ["./node_modules/expo-router"],
+      "expo-router/*": ["./node_modules/expo-router/*"]
+    },
+    "jsx": "react-jsx",
+    "types": ["react-native", "node"],
+    "allowJs": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true
+  },
+  "include": ["**/*.ts", "**/*.tsx", "app.d.ts"]
 }

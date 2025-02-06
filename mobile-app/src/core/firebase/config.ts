@@ -1,6 +1,7 @@
-import { initializeApp } from '@react-native-firebase/app';
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
+import { initializeApp } from 'firebase/app';
+import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Firebase yapılandırma bilgileri
 const firebaseConfig = {
@@ -13,7 +14,14 @@ const firebaseConfig = {
   measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-// Firebase başlatma işlemi
+// Firebase'i başlat
 const app = initializeApp(firebaseConfig);
 
-export { app, auth, firestore }; 
+// Auth'u AsyncStorage ile başlat
+const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(AsyncStorage)
+});
+
+const firestore = getFirestore(app);
+
+export { auth, firestore }; 

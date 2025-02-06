@@ -172,3 +172,5 @@ build/Release
 # dataconnect generated files
 .dataconnect
 .cursor/rules/ses.mdc
+mobile-app/package.json
+mobile-app/package-lock.json

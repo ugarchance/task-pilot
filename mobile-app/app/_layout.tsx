@@ -1,18 +1,11 @@
-import { Stack } from 'expo-router';
+import { Stack, Slot } from 'expo-router';
 import { PaperProvider } from 'react-native-paper';
-import { theme } from '../src/utils/theme';
+import * as React from 'react';
 
 export default function RootLayout() {
   return (
-    <PaperProvider theme={theme}>
-      <Stack
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: theme.colors.primary,
-          },
-          headerTintColor: '#fff',
-        }}
-      />
+    <PaperProvider>
+      <Slot />
     </PaperProvider>
   );
 } 
