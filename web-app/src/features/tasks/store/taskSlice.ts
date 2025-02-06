@@ -141,7 +141,6 @@ const taskSlice = createSlice({
         state.items[taskIndex] = {
           ...state.items[taskIndex],
           status,
-          updatedAt: new Date().toISOString(),
         };
       }
     },
