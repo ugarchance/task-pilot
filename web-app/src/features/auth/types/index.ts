@@ -1,11 +1,16 @@
-import { User as FirebaseUser } from 'firebase/auth';
+// src/features/auth/types/index.ts
+import { User as FirebaseUser, UserMetadata } from 'firebase/auth';
 
 export interface AuthUser extends FirebaseUser {
-  // Firebase User'a eklemek istediğiniz özel alanları buraya ekleyebilirsiniz
+  role: 'admin' | 'moderator' | 'user' | null; 
+  profilePicture?: string | null;
+  customClaims?: { [key: string]: any };
+  createdAt?: number | null;  
+  updatedAt?: number | null;
 }
 
 export interface AuthState {
   user: AuthUser | null;
   loading: boolean;
   error: string | null;
-} 
+}
