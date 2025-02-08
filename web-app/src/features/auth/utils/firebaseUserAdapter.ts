@@ -3,9 +3,7 @@ import { User } from 'firebase/auth';
 import { AuthUser } from '../types';
 
 export const adaptFirebaseUserToAuthUser = (firebaseUser: User | null): AuthUser | null => {
-  if (!firebaseUser) {
-    return null;
-  }
+  if (!firebaseUser) return null;
 
   return {
     uid: firebaseUser.uid,
@@ -14,13 +12,12 @@ export const adaptFirebaseUserToAuthUser = (firebaseUser: User | null): AuthUser
     displayName: firebaseUser.displayName,
     photoURL: firebaseUser.photoURL,
     phoneNumber: firebaseUser.phoneNumber,
-    disabled: false,
     isAnonymous: firebaseUser.isAnonymous,
     metadata: {
-      creationTime: firebaseUser.metadata.creationTime,
-      lastSignInTime: firebaseUser.metadata.lastSignInTime
+      creationTime: firebaseUser.metadata.creationTime || undefined,
+      lastSignInTime: firebaseUser.metadata.lastSignInTime || undefined
     },
-    providerData: firebaseUser.providerData.map((provider) => ({
+    providerData: firebaseUser.providerData.map(provider => ({
       providerId: provider.providerId,
       uid: provider.uid,
       displayName: provider.displayName,
@@ -30,8 +27,10 @@ export const adaptFirebaseUserToAuthUser = (firebaseUser: User | null): AuthUser
     })),
     role: (firebaseUser as any)?.customClaims?.role || null,
     customClaims: (firebaseUser as any)?.customClaims,
-    createdAt: firebaseUser.metadata.creationTime ? new Date(firebaseUser.metadata.creationTime).getTime() : null,
-    updatedAt: firebaseUser.metadata.lastSignInTime ? new Date(firebaseUser.metadata.lastSignInTime).getTime() : null,
-    profilePicture: null,
+    createdAt: firebaseUser.metadata.creationTime ? 
+      new Date(firebaseUser.metadata.creationTime).getTime() : null,
+    updatedAt: firebaseUser.metadata.lastSignInTime ? 
+      new Date(firebaseUser.metadata.lastSignInTime).getTime() : null,
+    profilePicture: null
   };
 };

@@ -17,12 +17,9 @@ export const useAuth = () => {
   useEffect(() => {
     const unsubscribe = authService.onAuthStateChanged(async (authUser) => {
       if (authUser) {
-        //authUser, adaptörden geliyor, AuthUser tipinde.
-        //setAuthToken, Firebase User bekliyor, o yüzden burada ayrıca bir işlem yapmamız lazım:
-        if (auth.currentUser) { // Firebase User objesine bu şekilde erişebiliriz
+        if (auth.currentUser) {
           await setAuthToken(auth.currentUser);
         }
-
       } else {
         removeAuthToken();
       }
