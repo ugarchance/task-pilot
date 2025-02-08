@@ -6,10 +6,12 @@ import { Input } from '@/shared/components/ui/input';
 import { TaskModalProps, STATUS_OPTIONS } from '@/features/tasks/types';
 import { cn } from '@/shared/utils/common';
 
+type TaskStatusType = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+
 export function TaskModal({ task, isOpen, onClose, onSubmit }: TaskModalProps) {
   const [title, setTitle] = useState(task?.title || '');
   const [description, setDescription] = useState(task?.description || '');
-  const [status, setStatus] = useState(task?.status || 'PENDING');
+  const [status, setStatus] = useState<TaskStatusType>(task?.status || 'PENDING');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -89,7 +91,7 @@ export function TaskModal({ task, isOpen, onClose, onSubmit }: TaskModalProps) {
             </label>
             <select
               value={status}
-              onChange={(e) => setStatus(e.target.value)}
+              onChange={(e) => setStatus(e.target.value as TaskStatusType)}
               className={cn(
                 "w-full px-4 py-2 border border-gray-300 rounded-md",
                 "focus:outline-none focus:ring-2 focus:ring-[#004e89]",

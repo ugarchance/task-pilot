@@ -30,10 +30,12 @@ export default function RootLayout({
       <head>
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col h-full overflow-hidden`}>
-        <ClientLayout>
-          {children}
-        </ClientLayout>
+      <body suppressHydrationWarning className="antialiased flex flex-col h-full overflow-hidden">
+        <div className={`${geistSans.variable} ${geistMono.variable}`}>
+          <ClientLayout>
+            {children}
+          </ClientLayout>
+        </div>
       </body>
     </html>
   );

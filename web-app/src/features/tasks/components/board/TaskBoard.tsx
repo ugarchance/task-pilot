@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, MouseSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { Task, TaskStatus, DEFAULT_COLUMNS } from '@/features/tasks/types';
 import { TaskColumnComponent } from './TaskColumn';
@@ -39,6 +39,11 @@ export function TaskBoard({
   singleColumnMode = false
 }: TaskBoardProps) {
   const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const { 
     searchQuery, 
@@ -74,6 +79,44 @@ export function TaskBoard({
       onShowAddFormChange(false);
     }
   };
+
+  // Server-side rendering sırasında DnD'yi gösterme
+  if (!isClient) {
+    return (
+      <div className="flex flex-col h-full">
+        <div className="bg-white/80 backdrop-blur-sm shadow-sm border-b">
+          <div className="container mx-auto py-2">
+            <TaskBoardHeader
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              statusFilter={statusFilter}
+              onStatusFilterChange={setStatusFilter}
+              columns={columns}
+              hideFilters={singleColumnMode}
+              tasks={tasks}
+            />
+          </div>
+        </div>
+
+        <div className="flex-1 p-3 bg-gray-50/50 relative min-h-0">
+          <div className={cn(
+            "grid gap-3 h-full min-h-0",
+            singleColumnMode ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
+          )}>
+            {columnsWithTasks.map((column) => (
+              <TaskColumnComponent
+                key={column.id}
+                column={column}
+                onEditTask={handleEditTask}
+                onDeleteTask={onTaskDelete}
+                singleColumnMode={singleColumnMode}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full">

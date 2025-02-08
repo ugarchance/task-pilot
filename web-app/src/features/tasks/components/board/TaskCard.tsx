@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Card } from '@/shared/components/ui/card';
@@ -21,6 +21,8 @@ import { cn } from '@/shared/utils/common';
 export function TaskCard({ task, onEdit, onDelete, singleColumnMode = false }: TaskCardProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [formattedCreatedAt, setFormattedCreatedAt] = useState<string>('');
+  const [formattedUpdatedAt, setFormattedUpdatedAt] = useState<string>('');
 
   const {
     attributes,
@@ -42,16 +44,24 @@ export function TaskCard({ task, onEdit, onDelete, singleColumnMode = false }: T
     transition,
   };
 
-  const formatDate = (dateStr: string | Date) => {
-    const date = dateStr instanceof Date ? dateStr : new Date(dateStr);
-    return date.toLocaleString('tr-TR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
+  useEffect(() => {
+    // Client-side'da tarih formatlaması yap
+    const formatDate = (dateStr: string) => {
+      const date = new Date(dateStr);
+      return date.toLocaleString('tr-TR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    };
+
+    setFormattedCreatedAt(formatDate(task.createdAt));
+    if (task.updatedAt) {
+      setFormattedUpdatedAt(formatDate(task.updatedAt));
+    }
+  }, [task.createdAt, task.updatedAt]);
 
   const handleDelete = async () => {
     try {
@@ -86,13 +96,13 @@ export function TaskCard({ task, onEdit, onDelete, singleColumnMode = false }: T
           <div className="flex flex-col space-y-1.5">
             <div className="flex items-start justify-between gap-1.5">
               <h3 className={cn(
-                "font-medium flex-1",
+                "font-medium flex-1 break-words min-w-0",
                 singleColumnMode ? "text-base" : "text-xs"
               )}>{task.title}</h3>
               
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center gap-1 shrink-0">
                 <span className={cn(
-                  "text-[10px] px-1.5 py-0.5 rounded-full",
+                  "text-[10px] px-1.5 py-0.5 rounded-full whitespace-nowrap",
                   TASK_CARD_STATUS_COLORS[task.status]
                 )}>
                   {STATUS_LABELS[task.status]}
@@ -101,7 +111,7 @@ export function TaskCard({ task, onEdit, onDelete, singleColumnMode = false }: T
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="h-6 w-6 text-gray-500 hover:text-gray-700"
+                  className="h-6 w-6 text-gray-500 hover:text-gray-700 shrink-0"
                   onClick={() => onEdit(task)}
                 >
                   <span className="material-icons text-sm">edit</span>
@@ -110,7 +120,7 @@ export function TaskCard({ task, onEdit, onDelete, singleColumnMode = false }: T
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="h-6 w-6 text-gray-500 hover:text-red-600"
+                  className="h-6 w-6 text-gray-500 hover:text-red-600 shrink-0"
                   onClick={() => setShowDeleteDialog(true)}
                 >
                   <span className="material-icons text-sm">delete</span>
@@ -126,12 +136,12 @@ export function TaskCard({ task, onEdit, onDelete, singleColumnMode = false }: T
             <div className="flex items-center justify-between text-[10px] text-gray-500">
               <div className="flex items-center space-x-1">
                 <span className="material-icons text-xs">calendar_today</span>
-                <span>{formatDate(task.createdAt)}</span>
+                <span>{formattedCreatedAt}</span>
               </div>
-              {task.updatedAt && (
+              {formattedUpdatedAt && (
                 <div className="flex items-center space-x-1">
                   <span className="material-icons text-xs">update</span>
-                  <span>Güncellendi: {formatDate(task.updatedAt)}</span>
+                  <span>Güncellendi: {formattedUpdatedAt}</span>
                 </div>
               )}
             </div>

@@ -7,11 +7,12 @@ const initialState: AuthState = {
   error: null,
 };
 
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<AuthUser | null>) => {
+    setUser: (state, action: PayloadAction<AuthUser | null>) => { // Burayı güncelleyin
       state.user = action.payload;
       state.loading = false;
       state.error = null;
@@ -30,6 +31,5 @@ const authSlice = createSlice({
     },
   },
 });
-
 export const { setUser, setLoading, setError, signOut } = authSlice.actions;
 export default authSlice.reducer; 

@@ -6,9 +6,15 @@ interface TasksState {
   items: Task[];
   loading: boolean;
   error: string | null;
-  optimisticUpdates: {
-    [key: string]: Task; 
-  };
+  optimisticUpdates: Record<string, {
+    id: string;
+    title: string;
+    description: string;
+    status: TaskStatus;
+    createdAt: string;
+    updatedAt: string;
+    userId: string;
+  }>;
 }
 
 const initialState: TasksState = {
@@ -90,7 +96,15 @@ const taskSlice = createSlice({
       // Görevi sakla ve listeden kaldır
       const taskToDelete = state.items.find(task => task.id === taskId);
       if (taskToDelete) {
-        state.optimisticUpdates[taskId] = taskToDelete;
+        state.optimisticUpdates[taskId] = {
+          id: taskToDelete.id,
+          title: taskToDelete.title,
+          description: taskToDelete.description,
+          status: taskToDelete.status,
+          createdAt: taskToDelete.createdAt,
+          updatedAt: taskToDelete.updatedAt,
+          userId: taskToDelete.userId,
+        };
         state.items = state.items.filter(task => task.id !== taskId);
       }
     },
@@ -99,7 +113,15 @@ const taskSlice = createSlice({
       // Saklanan görevi geri yükle
       const taskToRestore = state.optimisticUpdates[taskId];
       if (taskToRestore) {
-        state.items.push(taskToRestore);
+        state.items.push({
+          id: taskToRestore.id,
+          title: taskToRestore.title,
+          description: taskToRestore.description,
+          status: taskToRestore.status,
+          createdAt: taskToRestore.createdAt,
+          updatedAt: taskToRestore.updatedAt,
+          userId: taskToRestore.userId,
+        });
         delete state.optimisticUpdates[taskId];
       }
     },
@@ -110,12 +132,19 @@ const taskSlice = createSlice({
       
       if (taskIndex !== -1) {
         // Orijinal task'ı sakla
-        state.optimisticUpdates[taskId] = { ...state.items[taskIndex] };
+        state.optimisticUpdates[taskId] = {
+          id: state.items[taskIndex].id,
+          title: state.items[taskIndex].title,
+          description: state.items[taskIndex].description,
+          status: state.items[taskIndex].status,
+          createdAt: state.items[taskIndex].createdAt,
+          updatedAt: state.items[taskIndex].updatedAt,
+          userId: state.items[taskIndex].userId,
+        };
         // Task'ı optimistik olarak güncelle
         state.items[taskIndex] = {
           ...state.items[taskIndex],
           status,
-          updatedAt: new Date().toISOString(),
         };
       }
     },
@@ -127,7 +156,15 @@ const taskSlice = createSlice({
         const taskIndex = state.items.findIndex(task => task.id === taskId);
         if (taskIndex !== -1) {
           // Task'ı orijinal haline geri döndür
-          state.items[taskIndex] = originalTask;
+          state.items[taskIndex] = {
+            id: originalTask.id,
+            title: originalTask.title,
+            description: originalTask.description,
+            status: originalTask.status,
+            createdAt: originalTask.createdAt,
+            updatedAt: originalTask.updatedAt,
+            userId: originalTask.userId,
+          };
         }
         // Optimistik güncelleme kaydını temizle
         delete state.optimisticUpdates[taskId];
@@ -257,7 +294,15 @@ const taskSlice = createSlice({
         // Hata durumunda görevi geri yükle
         if (action.meta.arg && state.optimisticUpdates[action.meta.arg]) {
           const taskToRestore = state.optimisticUpdates[action.meta.arg];
-          state.items.push(taskToRestore);
+          state.items.push({
+            id: taskToRestore.id,
+            title: taskToRestore.title,
+            description: taskToRestore.description,
+            status: taskToRestore.status,
+            createdAt: taskToRestore.createdAt,
+            updatedAt: taskToRestore.updatedAt,
+            userId: taskToRestore.userId,
+          });
           delete state.optimisticUpdates[action.meta.arg];
         }
       });
