@@ -8,7 +8,8 @@ import {
   deleteDoc, 
   doc,
   orderBy,
-  Timestamp
+  Timestamp,
+  getDoc
 } from 'firebase/firestore';
 import { db } from '@/core/firebase/config';
 import { auth } from '@/core/firebase/config';
@@ -79,7 +80,7 @@ class TaskService {
     };
   }
 
-  async updateTaskStatus(taskId: string, status: TaskStatus): Promise<void> {
+  async updateTaskStatus(taskId: string, status: TaskStatus): Promise<Task> {
     const userId = this.getUserId();
     const taskRef = doc(db, `users/${userId}/tasks/${taskId}`);
     
@@ -87,12 +88,23 @@ class TaskService {
       status,
       updatedAt: Timestamp.now()
     });
+    
+    const updatedDoc = await getDoc(taskRef);
+    const docData = updatedDoc.data();
+    
+    return {
+      id: updatedDoc.id,
+      ...docData,
+      createdAt: docData?.createdAt.toDate().toISOString(),
+      updatedAt: docData?.updatedAt.toDate().toISOString(),
+      userId: userId
+    } as Task;
   }
 
   async updateTask(
     taskId: string, 
     data: { title: string; description: string; status: TaskStatus }
-  ): Promise<void> {
+  ): Promise<Task> {
     const userId = this.getUserId();
     const taskRef = doc(db, `users/${userId}/tasks/${taskId}`);
     
@@ -100,12 +112,59 @@ class TaskService {
       ...data,
       updatedAt: Timestamp.now()
     });
+    
+    const updatedDoc = await getDoc(taskRef);
+    const docData = updatedDoc.data();
+    
+    return { 
+      id: updatedDoc.id,
+      ...docData,
+      createdAt: docData?.createdAt?.toDate().toISOString() ?? Timestamp.now().toDate().toISOString(),
+      updatedAt: docData?.updatedAt?.toDate().toISOString() ?? Timestamp.now().toDate().toISOString(),
+      userId: userId
+    } as Task;
   }
 
   async deleteTask(taskId: string): Promise<void> {
     const userId = this.getUserId();
     const taskRef = doc(db, `users/${userId}/tasks/${taskId}`);
     await deleteDoc(taskRef);
+  }
+
+  async getActiveTasks(): Promise<Task[]> {
+    const userId = this.getUserId();
+    const tasksRef = this.getTasksCollection(userId);
+    const q = query(
+      tasksRef,
+      where('status', 'in', ['PENDING', 'IN_PROGRESS']),
+      orderBy('createdAt', 'desc')
+    );
+    
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      createdAt: doc.data().createdAt.toDate().toISOString(),
+      updatedAt: doc.data().updatedAt.toDate().toISOString()
+    } as Task));
+  }
+
+  async getCompletedTasks(): Promise<Task[]> {
+    const userId = this.getUserId();
+    const tasksRef = this.getTasksCollection(userId);
+    const q = query(
+      tasksRef,
+      where('status', '==', 'COMPLETED'),
+      orderBy('createdAt', 'desc')
+    );
+    
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      createdAt: doc.data().createdAt.toDate().toISOString(),
+      updatedAt: doc.data().updatedAt.toDate().toISOString()
+    } as Task));
   }
 }
 

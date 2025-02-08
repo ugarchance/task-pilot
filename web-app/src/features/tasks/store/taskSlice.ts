@@ -13,6 +13,7 @@ interface TasksState {
     status: TaskStatus;
     createdAt: string;
     updatedAt: string;
+    userId: string;
   }>;
 }
 
@@ -102,6 +103,7 @@ const taskSlice = createSlice({
           status: taskToDelete.status,
           createdAt: taskToDelete.createdAt,
           updatedAt: taskToDelete.updatedAt,
+          userId: taskToDelete.userId,
         };
         state.items = state.items.filter(task => task.id !== taskId);
       }
@@ -118,6 +120,7 @@ const taskSlice = createSlice({
           status: taskToRestore.status,
           createdAt: taskToRestore.createdAt,
           updatedAt: taskToRestore.updatedAt,
+          userId: taskToRestore.userId,
         });
         delete state.optimisticUpdates[taskId];
       }
@@ -136,6 +139,7 @@ const taskSlice = createSlice({
           status: state.items[taskIndex].status,
           createdAt: state.items[taskIndex].createdAt,
           updatedAt: state.items[taskIndex].updatedAt,
+          userId: state.items[taskIndex].userId,
         };
         // Task'ı optimistik olarak güncelle
         state.items[taskIndex] = {
@@ -159,6 +163,7 @@ const taskSlice = createSlice({
             status: originalTask.status,
             createdAt: originalTask.createdAt,
             updatedAt: originalTask.updatedAt,
+            userId: originalTask.userId,
           };
         }
         // Optimistik güncelleme kaydını temizle
@@ -296,6 +301,7 @@ const taskSlice = createSlice({
             status: taskToRestore.status,
             createdAt: taskToRestore.createdAt,
             updatedAt: taskToRestore.updatedAt,
+            userId: taskToRestore.userId,
           });
           delete state.optimisticUpdates[action.meta.arg];
         }
