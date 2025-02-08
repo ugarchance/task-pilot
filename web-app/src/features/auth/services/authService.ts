@@ -45,11 +45,8 @@ export const authService = {
   // Auth state değişikliklerini dinleme
   onAuthStateChanged: (callback: (user: ReturnType<typeof adaptFirebaseUserToAuthUser>) => void) => {
     return onAuthStateChanged(auth, (firebaseUser) => {
-      console.log("onAuthStateChanged tetiklendi", firebaseUser); // GİRİŞ
       const authUser = adaptFirebaseUserToAuthUser(firebaseUser);
-      console.log("adaptFirebaseUserToAuthUser sonucu:", authUser); // ADAPTÖR SONUCU
       callback(authUser);
-      console.log("onAuthStateChanged callback çağrıldı"); // ÇIKIŞ
     });
   },
 };

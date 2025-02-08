@@ -41,7 +41,7 @@ export default function CompletedTasksPage() {
 
   const handleTaskCreate = async (data: { title: string; description: string }) => {
     await createTask(data);
-    await fetchCompletedTasks(); // Yeni görev oluşturulduktan sonra listeyi güncelle
+    await fetchCompletedTasks();
   };
 
   if (error) {

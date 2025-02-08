@@ -161,7 +161,7 @@ export function LoginForm() {
                   animate={{ opacity: loading ? 1 : 0 }}
                 />
                 <span className="relative flex items-center justify-center">
-                  <FcGoogle className="mr-2 h-5 w-5" />
+                  <FcGoogle className="mr-2 h-5 w-5"  />
                   Google ile Devam Et
                 </span>
               </Button>

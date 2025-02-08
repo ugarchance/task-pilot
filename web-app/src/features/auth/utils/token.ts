@@ -1,17 +1,15 @@
-// src/features/auth/utils/token.ts
 import { auth } from '@/core/firebase/config';
-import { User } from 'firebase/auth'; // User'ı import ediyoruz
-//import { AuthUser } from '../types'; // AuthUser'a gerek yok
+import { User } from 'firebase/auth'; 
 import Cookies from 'js-cookie';
 
 const AUTH_TOKEN_KEY = 'auth-token';
 
-export const setAuthToken = async (user: User | null) => { // User tipini kullan
+export const setAuthToken = async (user: User | null) => { 
   if (!user) {
     return;
   }
 
-  const token = await user.getIdToken(); // Sorunsuz çalışmalı
+  const token = await user.getIdToken(); 
   Cookies.set(AUTH_TOKEN_KEY, token, {
     expires: 7,
     secure: process.env.NODE_ENV === 'production',
@@ -30,6 +28,6 @@ export const getAuthToken = () => {
 export const refreshAuthToken = async () => {
   const currentUser = auth.currentUser;
   if (currentUser) {
-    await setAuthToken(currentUser); // Burada doğrudan currentUser'ı kullan
+    await setAuthToken(currentUser); 
   }
 };

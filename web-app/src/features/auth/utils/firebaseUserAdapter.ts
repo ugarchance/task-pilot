@@ -1,4 +1,3 @@
-// src/features/auth/utils/firebaseUserAdapter.js
 import { User } from 'firebase/auth';
 import { AuthUser } from '../types';
 

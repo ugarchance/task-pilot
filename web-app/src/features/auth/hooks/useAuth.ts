@@ -1,4 +1,3 @@
-// src/features/auth/hooks/useAuth.ts
 'use client';
 
 import { useEffect } from 'react';
@@ -28,7 +27,7 @@ export const useAuth = () => {
 
     // Token yenileme işlemi (1 saatte bir)
     const tokenRefreshInterval = setInterval(() => {
-      if (user) { // user yerine auth.currentUser kullanmak daha doğru
+      if (user) { 
         refreshAuthToken();
       }
     }, 60 * 60 * 1000);
@@ -37,7 +36,6 @@ export const useAuth = () => {
       unsubscribe();
       clearInterval(tokenRefreshInterval);
     };
-    //Bağımlılık dizisi dispatch olmalı
   }, [dispatch]);
 
 
@@ -46,7 +44,7 @@ export const useAuth = () => {
       dispatch(setLoading(true));
       const authUser = await authService.loginWithEmail(email, password);
        if (auth.currentUser) {
-          await setAuthToken(auth.currentUser); // Firebase User'ı gönder
+          await setAuthToken(auth.currentUser); 
         }
       dispatch(setUser(authUser));
       toast.success('Giriş başarılı!');
@@ -61,7 +59,7 @@ export const useAuth = () => {
       dispatch(setLoading(true));
       const authUser = await authService.loginWithGoogle();
       if (auth.currentUser) {
-        await setAuthToken(auth.currentUser); // Firebase User'ı gönder
+        await setAuthToken(auth.currentUser); 
       }
       dispatch(setUser(authUser));
       toast.success('Giriş başarılı!');
@@ -76,7 +74,7 @@ export const useAuth = () => {
       dispatch(setLoading(true));
       const authUser = await authService.registerWithEmail(email, password);
       if (auth.currentUser) {
-          await setAuthToken(auth.currentUser); // Firebase User'ı gönder
+          await setAuthToken(auth.currentUser); 
         }
       dispatch(setUser(authUser));
       toast.success('Kayıt başarılı!');

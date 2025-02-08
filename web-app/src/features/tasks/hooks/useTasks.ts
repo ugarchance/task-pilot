@@ -18,6 +18,7 @@ import {
   revertOptimisticDelete,
 } from '../store/taskSlice';
 import { toast } from 'sonner';
+import { auth } from '@/core/firebase/config';
 
 interface UseTasksReturn {
   // State
@@ -42,40 +43,42 @@ export function useTasks(): UseTasksReturn {
   const dispatch = useAppDispatch();
   const { items: tasks, loading, error } = useAppSelector((state) => state.tasks);
 
-  // Tüm görevleri getir
+  const user = auth.currentUser;
+  if (!user) throw new Error('Kullanıcı oturum açmamış');
+
   const handleFetchTasks = useCallback(async () => {
     await dispatch(fetchTasks());
   }, [dispatch]);
 
-  // Aktif görevleri getir
+
   const handleFetchActiveTasks = useCallback(async () => {
     await dispatch(fetchActiveTasks());
   }, [dispatch]);
 
-  // Tamamlanmış görevleri getir
+
   const handleFetchCompletedTasks = useCallback(async () => {
     await dispatch(fetchCompletedTasks());
   }, [dispatch]);
 
-  // Yeni görev oluştur (optimistik)
   const handleCreateTask = useCallback(async (data: { title: string; description: string }) => {
-    // Yükleme toast'ını göster
+
     const toastId = toast.loading('Görev oluşturuluyor...', {
-      duration: Infinity, // Sonsuz süre
+      duration: Infinity,
     });
 
     try {
-      // Geçici görev oluştur
+
       const tempTask: Task = {
         id: 'temp',
         title: data.title,
         description: data.description,
         status: 'PENDING',
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
+        userId: user.uid
       };
 
-      // Optimistik güncelleme yap
+
       dispatch(startOptimisticCreate(tempTask));
       
       // API çağrısını yap
@@ -102,7 +105,7 @@ export function useTasks(): UseTasksReturn {
       // Hata durumunda optimistik güncellemeyi geri al
       dispatch(revertOptimisticCreate('temp'));
     }
-  }, [dispatch]);
+  }, [dispatch, user.uid]);
 
   // Görev durumunu güncelle (optimistik)
   const handleUpdateTaskStatus = useCallback(async (taskId: string, status: TaskStatus) => {
