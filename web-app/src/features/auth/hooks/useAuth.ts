@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { authService } from '../services/authService';
 import { setUser, setLoading, setError, signOut } from '../store/authSlice';
 import { setAuthToken, removeAuthToken, refreshAuthToken } from '../utils/token';
@@ -8,10 +9,12 @@ import { toast } from 'sonner';
 import { useAppSelector } from '@/shared/hooks/useAppSelector';
 import { useAppDispatch } from '@/shared/hooks/useAppDispatch';
 import { auth } from '@/core/firebase/config';
+import { AuthUser } from '../types';
 
 export const useAuth = () => {
   const dispatch = useAppDispatch();
   const { user, loading, error } = useAppSelector((state) => state.auth);
+  const router = useRouter();
 
   useEffect(() => {
     const unsubscribe = authService.onAuthStateChanged(async (authUser) => {
@@ -38,19 +41,34 @@ export const useAuth = () => {
     };
   }, [dispatch]);
 
-
   const login = async (email: string, password: string) => {
     try {
       dispatch(setLoading(true));
       const authUser = await authService.loginWithEmail(email, password);
-       if (auth.currentUser) {
+
+      if (authUser) {
+        // Email doğrulama kontrolü
+        if (!authUser.emailVerified) {
+          toast.error('Email adresiniz doğrulanmamış. Lütfen email kutunuzu kontrol edin.');
+          router.push('/auth/verify-email');
+          return null;
+        }
+
+        if (auth.currentUser) {
           await setAuthToken(auth.currentUser); 
         }
-      dispatch(setUser(authUser));
-      toast.success('Giriş başarılı!');
+        dispatch(setUser(authUser));
+        toast.success('Giriş başarılı!');
+        router.push('/dashboard');
+      }
+      return authUser;
     } catch (error) {
-      dispatch(setError((error as Error).message));
-      toast.error('Giriş yapılırken bir hata oluştu');
+      const errorMessage = error instanceof Error ? error.message : 'Giriş yapılırken bir hata oluştu';
+      dispatch(setError(errorMessage));
+      toast.error(errorMessage);
+      throw error;
+    } finally {
+      dispatch(setLoading(false));
     }
   };
 
@@ -63,9 +81,14 @@ export const useAuth = () => {
       }
       dispatch(setUser(authUser));
       toast.success('Giriş başarılı!');
+      router.push('/dashboard');
+      return authUser;
     } catch (error) {
       dispatch(setError((error as Error).message));
       toast.error('Giriş yapılırken bir hata oluştu');
+      throw error;
+    } finally {
+      dispatch(setLoading(false));
     }
   };
 
@@ -77,10 +100,15 @@ export const useAuth = () => {
           await setAuthToken(auth.currentUser); 
         }
       dispatch(setUser(authUser));
-      toast.success('Kayıt başarılı!');
+      toast.success('Kayıt başarılı! Lütfen email adresinizi doğrulayın.');
+      router.push('/auth/verify-email');
+      return authUser;
     } catch (error) {
       dispatch(setError((error as Error).message));
       toast.error('Kayıt olurken bir hata oluştu');
+      throw error;
+    } finally {
+      dispatch(setLoading(false));
     }
   };
 
@@ -90,9 +118,11 @@ export const useAuth = () => {
       removeAuthToken();
       dispatch(signOut());
       toast.success('Çıkış yapıldı');
+      router.push('/');
     } catch (error) {
       dispatch(setError((error as Error).message));
       toast.error('Çıkış yapılırken bir hata oluştu');
+      throw error;
     }
   };
 
@@ -101,10 +131,38 @@ export const useAuth = () => {
       dispatch(setLoading(true));
       await authService.resetPassword(email);
       dispatch(setLoading(false));
-      toast.success('Şifre sıfırlama bağlantısı gönderildi');
+      toast.success('Şifre sıfırlama bağlantısı email adresinize gönderildi');
     } catch (error) {
       dispatch(setError((error as Error).message));
       toast.error('Şifre sıfırlama işlemi başarısız oldu');
+      throw error;
+    }
+  };
+
+  const sendVerificationEmail = async () => {
+    try {
+      await authService.sendVerificationEmail();
+      toast.success('Doğrulama emaili gönderildi');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Email gönderimi başarısız';
+      toast.error(errorMessage);
+      throw error;
+    }
+  };
+
+  const checkEmailVerification = async () => {
+    try {
+      await authService.reloadUser();
+      const isVerified = authService.isEmailVerified();
+      if (isVerified) {
+        toast.success('Email doğrulandı!');
+        router.push('/dashboard');
+      }
+      return isVerified;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Doğrulama kontrolü başarısız';
+      toast.error(errorMessage);
+      throw error;
     }
   };
 
@@ -117,5 +175,7 @@ export const useAuth = () => {
     register,
     logout,
     resetPassword,
+    sendVerificationEmail,
+    checkEmailVerification,
   };
 };
