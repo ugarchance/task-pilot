@@ -16,10 +16,13 @@ export const useTasks = () => {
     setLoading(true);
     setError(null);
     try {
+      console.log('Creating task with:', { title, description, status, dueDate });
       const createTaskFn = httpsCallable(functions, 'createTask');
       const result = await createTaskFn({ title, description, status, dueDate });
+      console.log('Task created successfully:', result.data);
       return result.data as Task;
     } catch (err) {
+      console.error('Error details:', err);
       setError(err instanceof Error ? err.message : 'Görev oluşturulurken bir hata oluştu');
       throw err;
     } finally {

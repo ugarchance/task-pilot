@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "188961593738",
+    "project_id": "task-pilot-daa45",
+    "storage_bucket": "task-pilot-daa45.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:188961593738:android:e5ffcffc823cd386161073",
+        "android_client_info": {
+          "package_name": "com.ugarchance.taskpilot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "188961593738-j6srp6c94qcard44uk5a5mjai8q59jth.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgQvZgOc9jQAlM6dkbIH8mo06qAWtsCck"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "188961593738-j6srp6c94qcard44uk5a5mjai8q59jth.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

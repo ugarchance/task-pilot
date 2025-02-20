@@ -1,27 +1,32 @@
-import { initializeApp } from 'firebase/app';
-import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
+import firebase from '@react-native-firebase/app';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
-// Firebase yapılandırma bilgileri
 const firebaseConfig = {
-  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID
+  apiKey: 'AIzaSyDWjeCw5q57XQBAv61N5aJEL2HpPelNOQk',
+  authDomain: 'task-pilot-daa45.firebaseapp.com',
+  projectId: 'task-pilot-daa45',
+  storageBucket: 'task-pilot-daa45.firebasestorage.app',
+  messagingSenderId: '188961593738',
+  appId: '1:188961593738:web:771e4d49f9c86824161073',
+  databaseURL: 'https://task-pilot-daa45.firebaseio.com',
 };
 
+function initializeFirebase() {
+  try {
+    if (!firebase.apps.length) {
+      return firebase.initializeApp(firebaseConfig);
+    }
+    return firebase.app();
+  } catch (error) {
+    console.error('Firebase initialization error:', error);
+    throw error;
+  }
+}
+
 // Firebase'i başlat
-const app = initializeApp(firebaseConfig);
+initializeFirebase();
 
-// Auth'u AsyncStorage ile başlat
-const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(AsyncStorage)
-});
-
-const firestore = getFirestore(app);
-
-export { auth, firestore }; 
+export { auth, firestore };
+export default firebase;

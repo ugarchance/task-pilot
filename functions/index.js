@@ -7,11 +7,9 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-const {onRequest} = require("firebase-functions/v2/https");
-const logger = require("firebase-functions/logger");
-const { onCall } = require("firebase-functions/v2/https");
-const { initializeApp } = require("firebase-admin/app");
-const { getFirestore } = require("firebase-admin/firestore");
+const {onCall} = require("firebase-functions/v2/https");
+const {initializeApp} = require("firebase-admin/app");
+const {getFirestore} = require("firebase-admin/firestore");
 
 // Create and deploy your first functions
 // https://firebase.google.com/docs/functions/get-started
@@ -26,7 +24,7 @@ const db = getFirestore();
 
 // Görev oluşturma
 exports.createTask = onCall(async (request) => {
-  const { title, description, status, dueDate } = request.data;
+  const {title, description, status, dueDate} = request.data;
   const userId = request.auth.uid;
 
   const task = {
@@ -40,12 +38,12 @@ exports.createTask = onCall(async (request) => {
   };
 
   const docRef = await db.collection("tasks").add(task);
-  return { id: docRef.id, ...task };
+  return {id: docRef.id, ...task};
 });
 
 // Görev güncelleme
 exports.updateTask = onCall(async (request) => {
-  const { id, status } = request.data;
+  const {id, status} = request.data;
   const userId = request.auth.uid;
 
   const taskRef = db.collection("tasks").doc(id);
@@ -64,12 +62,12 @@ exports.updateTask = onCall(async (request) => {
     updatedAt: new Date(),
   });
 
-  return { id, status };
+  return {id, status};
 });
 
 // Görev silme
 exports.deleteTask = onCall(async (request) => {
-  const { id } = request.data;
+  const {id} = request.data;
   const userId = request.auth.uid;
 
   const taskRef = db.collection("tasks").doc(id);
@@ -84,13 +82,13 @@ exports.deleteTask = onCall(async (request) => {
   }
 
   await taskRef.delete();
-  return { id };
+  return {id};
 });
 
 // Görevleri listeleme
 exports.listTasks = onCall(async (request) => {
   const userId = request.auth.uid;
-  const { status } = request.data || {};
+  const {status} = request.data || {};
 
   let query = db.collection("tasks").where("userId", "==", userId);
 

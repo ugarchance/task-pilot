@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, ScrollView, Platform } from 'react-native';
-import { TextInput, Button, Text } from 'react-native-paper';
+import { TextInput, Button, Text, Surface } from 'react-native-paper';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { useRouter } from 'expo-router';
 import { format } from 'date-fns';
@@ -16,14 +16,16 @@ export default function CreateTaskScreen() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const { loading, error, createTask } = useTasks();
 
-  const handleCreate = async () => {
+  const handleCreate = useCallback(async () => {
     try {
+      console.log('Creating task with:', { title, description, status: TaskStatus.PENDING, dueDate });
       await createTask(title, description, TaskStatus.PENDING, dueDate);
+      console.log('Task created successfully');
       router.back();
     } catch (err) {
-      // Error state is handled by the hook
+      console.error('Error creating task:', err);
     }
-  };
+  }, [title, description, dueDate, createTask, router]);
 
   const onChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     setShowDatePicker(Platform.OS === 'ios');

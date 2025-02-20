@@ -1,11 +1,23 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { useAuth } from './src/hooks/auth/useAuth';
+import { initializeApp } from 'firebase/app';
+
+
 
 export default function App() {
+  const { user } = useAuth();
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
+      {!user ? (
+        <LoginScreen />
+      ) : (
+        <View style={styles.container}>
+          {/* Burada mevcut task oluşturma ekranınız olmalı */}
+        </View>
+      )}
     </View>
   );
 }
@@ -13,8 +25,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#000',
   },
 });
