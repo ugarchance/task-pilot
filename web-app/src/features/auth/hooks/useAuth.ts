@@ -116,16 +116,17 @@ export const useAuth = () => {
     try {
       dispatch(setLoading(true));
       const authUser = await authService.registerWithEmail(email, password);
-      if (auth.currentUser) {
-          await setAuthToken(auth.currentUser); 
-        }
-      dispatch(setUser(authUser));
+      
+      // Artık token oluşturmuyoruz ve kullanıcıyı state'e eklemiyoruz
+      // çünkü email doğrulanana kadar giriş yapamayacak
+      
       toast.success('Kayıt başarılı! Lütfen email adresinizi doğrulayın.');
       router.push('/auth/verify-email');
       return authUser;
     } catch (error) {
-      dispatch(setError((error as Error).message));
-      toast.error('Kayıt olurken bir hata oluştu');
+      const errorMessage = error instanceof Error ? error.message : 'Kayıt olurken bir hata oluştu';
+      dispatch(setError(errorMessage));
+      toast.error(errorMessage);
       throw error;
     } finally {
       dispatch(setLoading(false));

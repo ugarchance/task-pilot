@@ -10,15 +10,22 @@ import { Mail, Loader2 } from 'lucide-react';
 export default function VerifyEmailPage() {
   const { user, sendVerificationEmail, checkEmailVerification } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [shouldRedirect, setShouldRedirect] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     if (!user) {
-      router.push('/login');
+      setShouldRedirect('/login');
     } else if (user.emailVerified) {
-      router.push('/dashboard');
+      setShouldRedirect('/dashboard');
     }
-  }, [user, router]);
+  }, [user]);
+
+  useEffect(() => {
+    if (shouldRedirect) {
+      router.push(shouldRedirect);
+    }
+  }, [shouldRedirect, router]);
 
   const handleSendVerification = async () => {
     setIsLoading(true);
@@ -38,7 +45,7 @@ export default function VerifyEmailPage() {
     }
   };
 
-  if (!user) {
+  if (!user || shouldRedirect) {
     return null;
   }
 

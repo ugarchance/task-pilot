@@ -22,12 +22,10 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
     <StoreProvider>
       <AuthProvider>
         <div className="min-h-screen flex flex-col">
-          {!isAuthPage && (
-            <header className="h-10 border-b bg-background/95 backdrop-blur">
-              <Header />
-            </header>
-          )}
-          <main className="flex-1 h-[calc(100vh-5rem)]">
+          <header className="h-10 border-b bg-background/95 backdrop-blur">
+            <Header />
+          </header>
+          <main className={`flex-1 ${isAuthPage ? 'h-[calc(100vh-2.5rem)]' : 'h-[calc(100vh-5rem)]'}`}>
             {children}
           </main>
           {!isAuthPage && (
