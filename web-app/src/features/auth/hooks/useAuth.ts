@@ -19,6 +19,16 @@ export const useAuth = () => {
   useEffect(() => {
     const unsubscribe = authService.onAuthStateChanged(async (authUser) => {
       if (authUser) {
+        // Email doğrulama kontrolü
+        if (!authUser.emailVerified) {
+          // Eğer email doğrulanmamışsa, kullanıcıyı doğrulama sayfasına yönlendir
+          router.push('/auth/verify-email');
+          // Kullanıcı state'ini güncelle ama token oluşturma
+          dispatch(setUser(authUser));
+          return;
+        }
+
+        // Email doğrulanmışsa token oluştur
         if (auth.currentUser) {
           await setAuthToken(auth.currentUser);
         }
@@ -30,7 +40,7 @@ export const useAuth = () => {
 
     // Token yenileme işlemi (1 saatte bir)
     const tokenRefreshInterval = setInterval(() => {
-      if (user) { 
+      if (user?.emailVerified) { 
         refreshAuthToken();
       }
     }, 60 * 60 * 1000);
@@ -39,7 +49,7 @@ export const useAuth = () => {
       unsubscribe();
       clearInterval(tokenRefreshInterval);
     };
-  }, [dispatch]);
+  }, [dispatch, router]);
 
   const login = async (email: string, password: string) => {
     try {
@@ -76,12 +86,22 @@ export const useAuth = () => {
     try {
       dispatch(setLoading(true));
       const authUser = await authService.loginWithGoogle();
-      if (auth.currentUser) {
-        await setAuthToken(auth.currentUser); 
+      
+      if (authUser) {
+        // Email doğrulama kontrolü
+        if (!authUser.emailVerified) {
+          toast.error('Email adresiniz doğrulanmamış. Lütfen email kutunuzu kontrol edin.');
+          router.push('/auth/verify-email');
+          return null;
+        }
+
+        if (auth.currentUser) {
+          await setAuthToken(auth.currentUser);
+        }
+        dispatch(setUser(authUser));
+        toast.success('Giriş başarılı!');
+        router.push('/dashboard');
       }
-      dispatch(setUser(authUser));
-      toast.success('Giriş başarılı!');
-      router.push('/dashboard');
       return authUser;
     } catch (error) {
       dispatch(setError((error as Error).message));

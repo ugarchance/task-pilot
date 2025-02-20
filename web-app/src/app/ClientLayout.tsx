@@ -13,7 +13,10 @@ interface ClientLayoutProps {
 
 export default function ClientLayout({ children }: ClientLayoutProps) {
   const pathname = usePathname();
-  const isAuthPage = pathname?.startsWith('/(auth)') || pathname?.includes('/login') || pathname?.includes('/register');
+  const isAuthPage = pathname?.startsWith('/(auth)') || 
+                    pathname?.includes('/login') || 
+                    pathname?.includes('/register') ||
+                    pathname?.includes('/verify-email');
 
   return (
     <StoreProvider>
