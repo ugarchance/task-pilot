@@ -16,9 +16,9 @@ import { Button } from '@/shared/components/ui/button';
 interface TaskBoardProps {
   tasks: Task[];
   onTaskMove: (taskId: string, newStatus: TaskStatus) => Promise<void>;
-  onTaskUpdate: (taskId: string, data: { title: string; description: string; status: TaskStatus }) => Promise<void>;
+  onTaskUpdate: (taskId: string, data: { title: string; description: string; prompt: string; status: TaskStatus }) => Promise<void>;
   onTaskDelete: (taskId: string) => Promise<void>;
-  onTaskCreate: (data: { title: string; description: string }) => Promise<void>;
+  onTaskCreate: (data: { title: string; description: string; prompt: string }) => Promise<void>;
   showAddForm: boolean;
   onShowAddFormChange: (show: boolean) => void;
   loading?: boolean;
@@ -70,12 +70,12 @@ export function TaskBoard({
     setEditingTask(task);
   };
 
-  const handleUpdateTask = async (data: { title: string; description: string; status: TaskStatus }) => {
+  const handleUpdateTask = async (data: { title: string; description: string; prompt: string; status: TaskStatus }) => {
     if (editingTask) {
       await onTaskUpdate(editingTask.id, data);
       setEditingTask(undefined);
     } else {
-      await onTaskCreate({ title: data.title, description: data.description });
+      await onTaskCreate({ title: data.title, description: data.description, prompt: data.prompt });
       onShowAddFormChange(false);
     }
   };

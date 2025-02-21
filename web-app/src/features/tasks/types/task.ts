@@ -9,6 +9,7 @@ export interface Task {
   userId: string;
   title: string;
   description: string;
+  prompt: string;
   status: TaskStatus;
   createdAt: string;
   updatedAt: string;

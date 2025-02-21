@@ -6,12 +6,14 @@ export const taskStatusEnum = z.enum(TASK_STATUSES);
 export const createTaskSchema = z.object({
   title: z.string().min(1, 'Başlık zorunludur'),
   description: z.string(),
+  prompt: z.string().optional().default(''),
   status: taskStatusEnum.optional().default('PENDING'),
 });
 
 export const updateTaskSchema = z.object({
   title: z.string().min(1, 'Başlık zorunludur').optional(),
   description: z.string().optional(),
+  prompt: z.string().optional(),
   status: taskStatusEnum.optional(),
 });
 

@@ -10,6 +10,7 @@ interface TasksState {
     id: string;
     title: string;
     description: string;
+    prompt: string;
     status: TaskStatus;
     createdAt: string;
     updatedAt: string;
@@ -48,7 +49,7 @@ export const fetchCompletedTasks = createAsyncThunk(
 
 export const createTask = createAsyncThunk(
   'tasks/create',
-  async (data: { title: string; description: string }) => {
+  async (data: { title: string; description: string; prompt?: string }) => {
     return await taskService.createTask(data);
   }
 );
@@ -62,7 +63,15 @@ export const updateTaskStatus = createAsyncThunk(
 
 export const updateTask = createAsyncThunk(
   'tasks/update',
-  async ({ taskId, data }: { taskId: string; data: { title: string; description: string; status: TaskStatus } }) => {
+  async ({ taskId, data }: { 
+    taskId: string; 
+    data: { 
+      title: string; 
+      description: string; 
+      prompt?: string; 
+      status: TaskStatus 
+    } 
+  }) => {
     return await taskService.updateTask(taskId, data);
   }
 );
@@ -100,6 +109,7 @@ const taskSlice = createSlice({
           id: taskToDelete.id,
           title: taskToDelete.title,
           description: taskToDelete.description,
+          prompt: taskToDelete.prompt,
           status: taskToDelete.status,
           createdAt: taskToDelete.createdAt,
           updatedAt: taskToDelete.updatedAt,
@@ -117,6 +127,7 @@ const taskSlice = createSlice({
           id: taskToRestore.id,
           title: taskToRestore.title,
           description: taskToRestore.description,
+          prompt: taskToRestore.prompt,
           status: taskToRestore.status,
           createdAt: taskToRestore.createdAt,
           updatedAt: taskToRestore.updatedAt,
@@ -136,6 +147,7 @@ const taskSlice = createSlice({
           id: state.items[taskIndex].id,
           title: state.items[taskIndex].title,
           description: state.items[taskIndex].description,
+          prompt: state.items[taskIndex].prompt,
           status: state.items[taskIndex].status,
           createdAt: state.items[taskIndex].createdAt,
           updatedAt: state.items[taskIndex].updatedAt,
@@ -160,6 +172,7 @@ const taskSlice = createSlice({
             id: originalTask.id,
             title: originalTask.title,
             description: originalTask.description,
+            prompt: originalTask.prompt,
             status: originalTask.status,
             createdAt: originalTask.createdAt,
             updatedAt: originalTask.updatedAt,
@@ -298,6 +311,7 @@ const taskSlice = createSlice({
             id: taskToRestore.id,
             title: taskToRestore.title,
             description: taskToRestore.description,
+            prompt: taskToRestore.prompt,
             status: taskToRestore.status,
             createdAt: taskToRestore.createdAt,
             updatedAt: taskToRestore.updatedAt,

@@ -11,6 +11,7 @@ type TaskStatusType = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
 export function TaskModal({ task, isOpen, onClose, onSubmit }: TaskModalProps) {
   const [title, setTitle] = useState(task?.title || '');
   const [description, setDescription] = useState(task?.description || '');
+  const [prompt, setPrompt] = useState(task?.prompt || '');
   const [status, setStatus] = useState<TaskStatusType>(task?.status || 'PENDING');
   const [loading, setLoading] = useState(false);
 
@@ -18,10 +19,12 @@ export function TaskModal({ task, isOpen, onClose, onSubmit }: TaskModalProps) {
     if (task) {
       setTitle(task.title);
       setDescription(task.description);
+      setPrompt(task.prompt);
       setStatus(task.status);
     } else {
       setTitle('');
       setDescription('');
+      setPrompt('');
       setStatus('PENDING');
     }
   }, [task]);
@@ -32,7 +35,7 @@ export function TaskModal({ task, isOpen, onClose, onSubmit }: TaskModalProps) {
     e.preventDefault();
     setLoading(true);
     try {
-      await onSubmit({ title, description, status });
+      await onSubmit({ title, description, prompt, status });
       onClose();
     } catch (error) {
       console.error('Görev güncellenirken hata:', error);
@@ -82,6 +85,22 @@ export function TaskModal({ task, isOpen, onClose, onSubmit }: TaskModalProps) {
                 "transition-colors h-32"
               )}
               required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Görev Promptu
+            </label>
+            <textarea
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              className={cn(
+                "w-full px-4 py-2 border border-gray-300 rounded-md",
+                "focus:outline-none focus:ring-2 focus:ring-[#004e89]",
+                "transition-colors h-48"
+              )}
+              placeholder="Görev ile ilgili detaylı prompt bilgisini buraya girebilirsiniz..."
             />
           </div>
 

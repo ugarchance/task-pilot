@@ -42,7 +42,7 @@ export default function TasksPage() {
     await updateTaskStatus(taskId, newStatus);
   };
 
-  const handleTaskUpdate = async (taskId: string, data: { title: string; description: string; status: TaskStatus }) => {
+  const handleTaskUpdate = async (taskId: string, data: { title: string; description: string; prompt: string; status: TaskStatus }) => {
     await updateTask(taskId, data);
   };
 
@@ -50,7 +50,7 @@ export default function TasksPage() {
     await deleteTask(taskId);
   };
 
-  const handleTaskCreate = async (data: { title: string; description: string }) => {
+  const handleTaskCreate = async (data: { title: string; description: string; prompt: string }) => {
     await createTask(data);
   };
 

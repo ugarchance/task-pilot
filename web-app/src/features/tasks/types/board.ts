@@ -50,5 +50,5 @@ export interface TaskModalProps {
   task?: Task;
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { title: string; description: string; status: TaskStatus }) => Promise<void>;
+  onSubmit: (data: { title: string; description: string; prompt: string; status: TaskStatus }) => Promise<void>;
 } 

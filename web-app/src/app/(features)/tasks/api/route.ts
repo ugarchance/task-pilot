@@ -5,6 +5,7 @@ import { createTaskSchema } from '@/features/tasks/validation/taskSchema';
 import { TASK_STATUSES, TaskStatus } from '@/features/tasks/types';
 import { getAuth } from 'firebase-admin/auth';
 import { initAdmin } from '@/core/firebase/admin';
+import { Timestamp } from 'firebase/firestore';
 
 // Firebase Admin'i initialize et
 initAdmin();
@@ -55,6 +56,7 @@ export async function GET(request: NextRequest) {
         id: docSnapshot.id,
         title: data.title || '',
         description: data.description || '',
+        prompt: data.prompt || '',
         status: isValidStatus ? status : 'PENDING',
         createdAt: data.createdAt?.toDate().toISOString() || new Date().toISOString(),
         updatedAt: data.updatedAt?.toDate().toISOString() || new Date().toISOString(),
@@ -90,12 +92,13 @@ export async function POST(request: NextRequest) {
     const taskData = validationResult.data;
     const tasksRef = collection(db, `users/${user.uid}/tasks`);
     
-    const now = new Date().toISOString();
+    const now = Timestamp.now();
     
     // Yeni görevi oluştur
     const docRef = await addDoc(tasksRef, {
       ...taskData,
       userId: user.uid,
+      prompt: taskData.prompt || '',
       createdAt: now,
       updatedAt: now
     });
@@ -115,6 +118,7 @@ export async function POST(request: NextRequest) {
       id: taskDoc.id,
       title: newTaskData.title || '',
       description: newTaskData.description || '',
+      prompt: newTaskData.prompt || '',
       status: newTaskData.status || 'PENDING',
       createdAt: now,
       updatedAt: now,

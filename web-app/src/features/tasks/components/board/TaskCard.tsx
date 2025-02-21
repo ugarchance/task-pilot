@@ -5,6 +5,8 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Card } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
+import { Tooltip,TooltipProvider,TooltipTrigger,TooltipContent } from '@/shared/components/ui/tooltip';
+
 import { TaskCardProps, TASK_CARD_STATUS_COLORS, STATUS_LABELS } from '@/features/tasks/types';
 import {
   AlertDialog,
@@ -95,10 +97,24 @@ export function TaskCard({ task, onEdit, onDelete, singleColumnMode = false }: T
         )}>
           <div className="flex flex-col space-y-1.5">
             <div className="flex items-start justify-between gap-1.5">
-              <h3 className={cn(
-                "font-medium flex-1 break-words min-w-0",
-                singleColumnMode ? "text-base" : "text-xs"
-              )}>{task.title}</h3>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <h3 className={cn(
+                      "font-medium flex-1 break-words min-w-0 cursor-help",
+                      singleColumnMode ? "text-base" : "text-xs"
+                    )}>{task.title}</h3>
+                  </TooltipTrigger>
+                  {task.prompt && (
+                    <TooltipContent side="bottom" align="start" className="max-w-[300px] whitespace-pre-wrap bg-gray-900 text-gray-50 px-3 py-2">
+                      <div className="flex flex-col gap-1">
+                        <p className="text-xs font-medium text-gray-200">Görev Promptu:</p>
+                        <p className="text-xs">{task.prompt}</p>
+                      </div>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
               
               <div className="flex items-center gap-1 shrink-0">
                 <span className={cn(

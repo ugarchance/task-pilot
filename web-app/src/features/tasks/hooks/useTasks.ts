@@ -30,9 +30,9 @@ interface UseTasksReturn {
   fetchTasks: () => Promise<void>;
   fetchActiveTasks: () => Promise<void>;
   fetchCompletedTasks: () => Promise<void>;
-  createTask: (data: { title: string; description: string }) => Promise<void>;
+  createTask: (data: { title: string; description: string; prompt: string }) => Promise<void>;
   updateTaskStatus: (taskId: string, status: TaskStatus) => Promise<void>;
-  updateTask: (taskId: string, data: { title: string; description: string; status: TaskStatus }) => Promise<void>;
+  updateTask: (taskId: string, data: { title: string; description: string; prompt: string; status: TaskStatus }) => Promise<void>;
   deleteTask: (taskId: string) => Promise<void>;
   
   // State Yönetimi
@@ -60,52 +60,38 @@ export function useTasks(): UseTasksReturn {
     await dispatch(fetchCompletedTasks());
   }, [dispatch]);
 
-  const handleCreateTask = useCallback(async (data: { title: string; description: string }) => {
-
+  const handleCreateTask = useCallback(async (data: { title: string; description: string; prompt: string }) => {
     const toastId = toast.loading('Görev oluşturuluyor...', {
-      duration: Infinity,
+      description: data.title
     });
 
     try {
-
+      // Optimistik güncelleme için geçici görev
       const tempTask: Task = {
         id: 'temp',
         title: data.title,
         description: data.description,
+        prompt: data.prompt,
         status: 'PENDING',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        userId: user.uid
+        userId: auth.currentUser?.uid || ''
       };
 
-
       dispatch(startOptimisticCreate(tempTask));
-      
-      // API çağrısını yap
       await dispatch(createTask(data));
-
-      // Başarılı durumunda yükleme toast'ını güncelle
-      toast.success('Görev başarıyla oluşturuldu!', {
+      toast.success('Görev oluşturuldu', {
         id: toastId,
-        duration: 2000,
-        icon: '✅',
-        description: `"${data.title}" görevi eklendi.`
+        description: data.title
       });
     } catch (error) {
-      console.error('Görev oluşturulurken hata:', error);
-      
-      // Hata durumunda yükleme toast'ını güncelle
-      toast.error('Görev oluşturulamadı!', {
-        id: toastId,
-        duration: 3000,
-        icon: '❌',
-        description: 'Bir hata oluştu, lütfen tekrar deneyin.'
-      });
-      
-      // Hata durumunda optimistik güncellemeyi geri al
       dispatch(revertOptimisticCreate('temp'));
+      toast.error('Görev oluşturulamadı', {
+        id: toastId,
+        description: (error as Error).message
+      });
     }
-  }, [dispatch, user.uid]);
+  }, [dispatch]);
 
   // Görev durumunu güncelle (optimistik)
   const handleUpdateTaskStatus = useCallback(async (taskId: string, status: TaskStatus) => {
@@ -134,7 +120,7 @@ export function useTasks(): UseTasksReturn {
   // Görevi güncelle
   const handleUpdateTask = useCallback(async (
     taskId: string,
-    data: { title: string; description: string; status: TaskStatus }
+    data: { title: string; description: string; prompt: string; status: TaskStatus }
   ) => {
     await dispatch(updateTask({ taskId, data }));
   }, [dispatch]);

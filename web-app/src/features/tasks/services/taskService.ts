@@ -32,12 +32,16 @@ class TaskService {
     const q = query(tasksRef, orderBy('createdAt', 'desc'));
     
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      createdAt: doc.data().createdAt.toDate().toISOString(),
-      updatedAt: doc.data().updatedAt.toDate().toISOString()
-    } as Task));
+    return snapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        prompt: data.prompt || '',
+        createdAt: data.createdAt.toDate().toISOString(),
+        updatedAt: data.updatedAt.toDate().toISOString()
+      } as Task;
+    });
   }
 
   async getTasksByStatus(status: TaskStatus): Promise<Task[]> {
@@ -50,15 +54,19 @@ class TaskService {
     );
     
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      createdAt: doc.data().createdAt.toDate().toISOString(),
-      updatedAt: doc.data().updatedAt.toDate().toISOString()
-    } as Task));
+    return snapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        prompt: data.prompt || '',
+        createdAt: data.createdAt.toDate().toISOString(),
+        updatedAt: data.updatedAt.toDate().toISOString()
+      } as Task;
+    });
   }
 
-  async createTask(data: { title: string; description: string }): Promise<Task> {
+  async createTask(data: { title: string; description: string; prompt?: string }): Promise<Task> {
     const userId = this.getUserId();
     const tasksRef = this.getTasksCollection(userId);
     
@@ -66,6 +74,7 @@ class TaskService {
     const newTask = {
       ...data,
       userId,
+      prompt: data.prompt || '',
       status: 'PENDING' as TaskStatus,
       createdAt: now,
       updatedAt: now
@@ -103,13 +112,14 @@ class TaskService {
 
   async updateTask(
     taskId: string, 
-    data: { title: string; description: string; status: TaskStatus }
+    data: { title: string; description: string; prompt?: string; status: TaskStatus }
   ): Promise<Task> {
     const userId = this.getUserId();
     const taskRef = doc(db, `users/${userId}/tasks/${taskId}`);
     
     await updateDoc(taskRef, {
       ...data,
+      prompt: data.prompt || '',
       updatedAt: Timestamp.now()
     });
     
@@ -141,12 +151,16 @@ class TaskService {
     );
     
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      createdAt: doc.data().createdAt.toDate().toISOString(),
-      updatedAt: doc.data().updatedAt.toDate().toISOString()
-    } as Task));
+    return snapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        prompt: data.prompt || '',
+        createdAt: data.createdAt.toDate().toISOString(),
+        updatedAt: data.updatedAt.toDate().toISOString()
+      } as Task;
+    });
   }
 
   async getCompletedTasks(): Promise<Task[]> {
@@ -159,12 +173,16 @@ class TaskService {
     );
     
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      createdAt: doc.data().createdAt.toDate().toISOString(),
-      updatedAt: doc.data().updatedAt.toDate().toISOString()
-    } as Task));
+    return snapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        prompt: data.prompt || '',
+        createdAt: data.createdAt.toDate().toISOString(),
+        updatedAt: data.updatedAt.toDate().toISOString()
+      } as Task;
+    });
   }
 }
 
