@@ -35,11 +35,12 @@ export function useProfile() {
   // Profil bilgilerini güncelle
   const handleUpdateProfile = useCallback(
     async (data: ProfileFormValues) => {
-      if (!user?.uid) return;
+      if (!user?.uid || !user?.email) return;
       try {
         await dispatch(
           updateProfile({
             userId: user.uid,
+            email: user.email,
             ...data,
           })
         ).unwrap();
@@ -48,7 +49,7 @@ export function useProfile() {
         toast.error('Profil güncellenirken bir hata oluştu');
       }
     },
-    [dispatch, user?.uid]
+    [dispatch, user?.uid, user?.email]
   );
 
   // Profil fotoğrafını güncelle

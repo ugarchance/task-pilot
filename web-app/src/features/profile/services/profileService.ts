@@ -31,26 +31,61 @@ export const profileService = {
       const { userId, ...updateData } = data;
       const profileRef = doc(db, 'profiles', userId);
       
-      await updateDoc(profileRef, {
+      const profileSnap = await getDoc(profileRef);
+      
+      if (!profileSnap.exists()) {
+        const initialProfile: Profile = {
+          id: userId,
+          userId,
+          email: '',
+          displayName: updateData.displayName || '',
+          preferences: {
+            emailNotifications: true,
+            pushNotifications: true,
+            theme: 'system',
+            language: 'tr',
+          },
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          ...updateData,
+        };
+        
+        await setDoc(profileRef, initialProfile);
+        return {
+          success: true,
+          data: initialProfile,
+          message: 'Profil başarıyla oluşturuldu',
+        };
+      }
+
+      const currentData = profileSnap.data() as Profile;
+      const updatedProfileData = {
+        ...currentData,
         ...updateData,
         updatedAt: new Date().toISOString(),
-      });
+      };
 
-      const updatedProfile = await getDoc(profileRef);
+      await updateDoc(profileRef, updatedProfileData);
 
       return {
         success: true,
-        data: updatedProfile.data() as Profile,
+        data: updatedProfileData,
         message: 'Profil başarıyla güncellendi',
       };
     } catch (error) {
+      console.error('Profil güncelleme hatası:', error);
       throw new AppError('Profil güncellenirken bir hata oluştu', 'INTERNAL_ERROR');
     }
   },
 
   async updateProfilePhoto(userId: string, file: File): Promise<ProfileResponse> {
     try {
-      const photoRef = ref(storage, `profile-photos/${userId}`);
+      // Dosya adını ve uzantısını al
+      const fileExtension = file.name.split('.').pop();
+      const fileName = `${Date.now()}.${fileExtension}`;
+      
+      // Storage referansını güncelle
+      const photoRef = ref(storage, `profile-photos/${userId}/${fileName}`);
       await uploadBytes(photoRef, file);
       const photoURL = await getDownloadURL(photoRef);
 
@@ -68,6 +103,7 @@ export const profileService = {
         message: 'Profil fotoğrafı başarıyla güncellendi',
       };
     } catch (error) {
+      console.error('Profil fotoğrafı güncelleme hatası:', error);
       throw new AppError('Profil fotoğrafı güncellenirken bir hata oluştu', 'INTERNAL_ERROR');
     }
   },

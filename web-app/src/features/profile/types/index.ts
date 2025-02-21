@@ -38,6 +38,7 @@ export interface ProfileFormValues {
 
 export interface ProfileUpdateRequest extends Partial<ProfileFormValues> {
   userId: string;
+  email?: string;
 }
 
 export interface ProfileResponse {
