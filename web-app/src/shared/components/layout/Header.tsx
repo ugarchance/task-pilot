@@ -7,7 +7,7 @@ import { PROTECTED_ROUTES } from '@/features/auth/constants/routes';
 import { usePathname } from 'next/navigation';
 
 export default function Header() {
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
   const pathname = usePathname();
   const isAuthPage = pathname?.startsWith('/(auth)') || 
                     pathname?.includes('/login') || 
@@ -24,7 +24,7 @@ export default function Header() {
           </span>
         </Link>
 
-        {!isAuthPage && user && (
+        {!isAuthPage && !loading && (
           <nav className="flex items-center gap-6">
             <Link 
               href={PROTECTED_ROUTES.TASKS}
@@ -51,7 +51,7 @@ export default function Header() {
         )}
 
         <div className="flex items-center gap-4">
-          {user ? (
+          {!loading && (user ? (
             <>
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
@@ -89,7 +89,7 @@ export default function Header() {
                 </Button>
               </Link>
             </div>
-          )}
+          ))}
         </div>
       </div>
     </div>

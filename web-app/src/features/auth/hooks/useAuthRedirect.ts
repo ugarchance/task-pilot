@@ -7,12 +7,13 @@ export const useAuthRedirect = () => {
   const { user, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const normalizedPath = pathname?.split('/(features)').pop() || pathname;
 
   useEffect(() => {
     if (loading) return;
 
-    const isPublicRoute = PUBLIC_ROUTES.includes(pathname as any);
-    const isProtectedRoute = Object.values(PROTECTED_ROUTES).includes(pathname as any);
+    const isPublicRoute = PUBLIC_ROUTES.includes(normalizedPath as any);
+    const isProtectedRoute = Object.values(PROTECTED_ROUTES).includes(normalizedPath as any);
 
     if (!user && isProtectedRoute) {
       router.push(AUTH_ROUTES.LOGIN);
@@ -21,7 +22,7 @@ export const useAuthRedirect = () => {
     if (user && isPublicRoute) {
       router.push(PROTECTED_ROUTES.TASKS);
     }
-  }, [user, loading, pathname, router]);
+  }, [user, loading, normalizedPath, router]);
 
   return { isAuthenticated: !!user, loading };
 }; 

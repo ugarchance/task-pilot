@@ -22,20 +22,19 @@ export function ProfileTabs() {
     <Tabs
       defaultValue={activeTab}
       onValueChange={handleTabChange}
-      className="flex flex-col h-full"
+      className="flex flex-col"
     >
       <div className="flex justify-center border-b border-white/10">
         <TabsList className="bg-transparent border-0 relative py-1">
           <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/10" />
           <TabsTrigger
             value="general"
-            className="relative data-[state=active]:bg-transparent data-[state=active]:text-white text-gray-400 px-8"
+            className="relative data-[state=active]:bg-transparent data-[state=active]:text-white text-gray-400 px-6"
           >
             <div className="flex items-center gap-2">
               <FiUser className="w-4 h-4" />
               <span>Genel Bilgiler</span>
             </div>
-            {/* Aktif sekme göstergesi */}
             <motion.div
               className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"
               initial={false}
@@ -48,13 +47,12 @@ export function ProfileTabs() {
           </TabsTrigger>
           <TabsTrigger
             value="notifications"
-            className="relative data-[state=active]:bg-transparent data-[state=active]:text-white text-gray-400 px-8"
+            className="relative data-[state=active]:bg-transparent data-[state=active]:text-white text-gray-400 px-6"
           >
             <div className="flex items-center gap-2">
               <FiSettings className="w-4 h-4" />
               <span>Tercihler</span>
             </div>
-            {/* Aktif sekme göstergesi */}
             <motion.div
               className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"
               initial={false}
@@ -68,7 +66,7 @@ export function ProfileTabs() {
         </TabsList>
       </div>
 
-      <div className="flex-1 min-h-0">
+      <div className="flex-1">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

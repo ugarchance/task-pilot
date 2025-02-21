@@ -20,6 +20,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
 
   return (
     <StoreProvider>
+      <Toaster position="top-right" richColors />
       <AuthProvider>
         <div className="min-h-screen flex flex-col">
           <header className="h-10 border-b bg-background/95 backdrop-blur">
@@ -35,7 +36,6 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
           )}
         </div>
       </AuthProvider>
-      <Toaster position="top-right" richColors />
     </StoreProvider>
   );
 } 

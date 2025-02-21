@@ -1,14 +1,13 @@
 'use client';
 
 import { useAuthRedirect } from '../hooks/useAuthRedirect';
-import { Toaster } from 'sonner';
+import { useState, useEffect } from 'react';
 
 interface AuthProviderProps {
   children: React.ReactNode;
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  // Auth durumunu ve yönlendirmeleri kontrol et
   const { loading } = useAuthRedirect();
 
   if (loading) {
@@ -19,10 +18,5 @@ export function AuthProvider({ children }: AuthProviderProps) {
     );
   }
 
-  return (
-    <>
-      {children}
-      <Toaster position="top-right" richColors />
-    </>
-  );
+  return children;
 } 
