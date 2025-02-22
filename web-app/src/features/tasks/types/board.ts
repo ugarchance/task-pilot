@@ -58,7 +58,7 @@ export interface TaskModalProps {
     prompt: string; 
     status: TaskStatus;
     tags: string[];
-    subTasks: { id: string; title: string; completed: boolean }[];
+    subTasks: Task[];
     progress: { done: string[]; todo: string[] };
   }) => Promise<void>;
 } 

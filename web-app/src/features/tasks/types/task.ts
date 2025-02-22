@@ -14,13 +14,11 @@ export interface Task {
   createdAt: string;
   updatedAt: string;
   tags: string[];
-  subTasks: {
-    id: string;
-    title: string;
-    completed: boolean;
-  }[];
+  subTasks: Task[];
   progress: {
     done: string[];
     todo: string[];
   };
+  parentTaskId?: string;
+  isSubTask?: boolean;
 } 

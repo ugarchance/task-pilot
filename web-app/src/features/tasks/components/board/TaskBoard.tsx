@@ -22,7 +22,7 @@ interface TaskBoardProps {
     prompt: string; 
     status: TaskStatus;
     tags: string[];
-    subTasks: { id: string; title: string; completed: boolean }[];
+    subTasks: Task[];
     progress: { done: string[]; todo: string[] };
   }) => Promise<void>;
   onTaskDelete: (taskId: string) => Promise<void>;
@@ -31,7 +31,7 @@ interface TaskBoardProps {
     description: string; 
     prompt: string;
     tags: string[];
-    subTasks: { id: string; title: string; completed: boolean }[];
+    subTasks: Task[];
     progress: { done: string[]; todo: string[] };
   }) => Promise<void>;
   showAddForm: boolean;
@@ -84,7 +84,21 @@ export function TaskBoard({
   }));
 
   const handleEditTask = (task: Task) => {
-    setEditingTask(task);
+    if (task.parentTaskId) {
+      const parentTask = tasks.find(t => t.id === task.parentTaskId);
+      if (parentTask) {
+        const updatedSubTasks = parentTask.subTasks?.map(st =>
+          st.id === task.id ? task : st
+        ) || [];
+
+        setEditingTask({
+          ...task,
+          subTasks: updatedSubTasks
+        });
+      }
+    } else {
+      setEditingTask(task);
+    }
   };
 
   const handleUpdateTask = async (data: { 
@@ -93,11 +107,29 @@ export function TaskBoard({
     prompt: string; 
     status: TaskStatus;
     tags: string[];
-    subTasks: { id: string; title: string; completed: boolean }[];
+    subTasks: Task[];
     progress: { done: string[]; todo: string[] };
   }) => {
     if (editingTask) {
-      await onTaskUpdate(editingTask.id, data);
+      if (editingTask.parentTaskId) {
+        const parentTask = tasks.find(t => t.id === editingTask.parentTaskId);
+        if (parentTask) {
+          const updatedSubTasks = parentTask.subTasks?.map(st =>
+            st.id === editingTask.id ? {
+              ...editingTask,
+              ...data,
+              updatedAt: new Date().toISOString()
+            } : st
+          ) || [];
+
+          await onTaskUpdate(parentTask.id, {
+            ...parentTask,
+            subTasks: updatedSubTasks
+          });
+        }
+      } else {
+        await onTaskUpdate(editingTask.id, data);
+      }
       setEditingTask(undefined);
     } else {
       await onTaskCreate({ 

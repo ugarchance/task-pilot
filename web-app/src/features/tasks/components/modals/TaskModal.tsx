@@ -3,15 +3,40 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
-import { TaskModalProps, STATUS_OPTIONS } from '@/features/tasks/types';
+import { Task, TaskStatus, STATUS_OPTIONS } from '@/features/tasks/types';
 import { cn } from '@/shared/utils/common';
 import { Badge } from '@/shared/components/ui/badge';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { nanoid } from 'nanoid';
+import { SubTaskSidebar } from '@/features/tasks/components/subtasks/SubTaskSidebar';
 
 type TaskStatusType = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
 
-export function TaskModal({ task, isOpen, onClose, onSubmit }: TaskModalProps) {
+interface TaskModalProps {
+  task?: Task;
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (data: { 
+    title: string; 
+    description: string; 
+    prompt: string; 
+    status: TaskStatus;
+    tags: string[];
+    subTasks: Task[];
+    progress: { done: string[]; todo: string[] };
+  }) => Promise<void>;
+  modalTitle?: string;
+  parentTask?: Task;
+}
+
+export function TaskModal({ 
+  task, 
+  isOpen, 
+  onClose, 
+  onSubmit,
+  modalTitle,
+  parentTask 
+}: TaskModalProps) {
   const [title, setTitle] = useState(task?.title || '');
   const [description, setDescription] = useState(task?.description || '');
   const [prompt, setPrompt] = useState(task?.prompt || '');
@@ -19,10 +44,12 @@ export function TaskModal({ task, isOpen, onClose, onSubmit }: TaskModalProps) {
   const [loading, setLoading] = useState(false);
   const [tags, setTags] = useState<string[]>(task?.tags || []);
   const [newTag, setNewTag] = useState('');
-  const [subTasks, setSubTasks] = useState<{ id: string; title: string; completed: boolean }[]>(task?.subTasks || []);
-  const [newSubTask, setNewSubTask] = useState('');
+  const [subTasks, setSubTasks] = useState<Task[]>(task?.subTasks || []);
+  const [showAddSubTaskModal, setShowAddSubTaskModal] = useState(false);
+  const [editingSubTask, setEditingSubTask] = useState<Task | undefined>(undefined);
   const [progress, setProgress] = useState<{ done: string[]; todo: string[] }>(task?.progress || { done: [], todo: [] });
   const [newProgressItem, setNewProgressItem] = useState({ type: 'todo' as 'done' | 'todo', text: '' });
+  const [isSubTaskSidebarOpen, setIsSubTaskSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (task) {
@@ -78,21 +105,73 @@ export function TaskModal({ task, isOpen, onClose, onSubmit }: TaskModalProps) {
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
 
-  const handleAddSubTask = () => {
-    if (newSubTask.trim()) {
-      setSubTasks([...subTasks, { id: nanoid(), title: newSubTask.trim(), completed: false }]);
-      setNewSubTask('');
-    }
+  const handleAddSubTask = async (data: { 
+    title: string; 
+    description: string; 
+    prompt: string; 
+    status: TaskStatus;
+    tags: string[];
+    subTasks: Task[];
+    progress: { done: string[]; todo: string[] };
+  }) => {
+    const now = new Date().toISOString();
+    const newTask: Task = {
+      id: nanoid(),
+      userId: task?.userId || '',
+      title: data.title,
+      description: data.description,
+      prompt: data.prompt,
+      status: data.status,
+      createdAt: now,
+      updatedAt: now,
+      tags: data.tags,
+      subTasks: data.subTasks,
+      progress: data.progress,
+      parentTaskId: task?.id,
+      isSubTask: true
+    };
+
+    setSubTasks([...subTasks, newTask]);
+    setShowAddSubTaskModal(false);
+  };
+
+  const handleEditSubTask = (subTask: Task) => {
+    setEditingSubTask(subTask);
+    setShowAddSubTaskModal(true);
+  };
+
+  const handleUpdateSubTask = async (data: { 
+    title: string; 
+    description: string; 
+    prompt: string; 
+    status: TaskStatus;
+    tags: string[];
+    subTasks: Task[];
+    progress: { done: string[]; todo: string[] };
+  }) => {
+    if (!editingSubTask) return;
+
+    const updatedSubTasks = subTasks.map(st =>
+      st.id === editingSubTask.id ? {
+        ...editingSubTask,
+        ...data,
+        updatedAt: new Date().toISOString()
+      } : st
+    );
+
+    setSubTasks(updatedSubTasks);
+    setShowAddSubTaskModal(false);
+    setEditingSubTask(undefined);
   };
 
   const handleToggleSubTask = (id: string) => {
-    setSubTasks(subTasks.map(task => 
-      task.id === id ? { ...task, completed: !task.completed } : task
+    setSubTasks(subTasks.map(st => 
+      st.id === id ? { ...st, status: st.status === 'COMPLETED' ? 'PENDING' : 'COMPLETED' } : st
     ));
   };
 
   const handleRemoveSubTask = (id: string) => {
-    setSubTasks(subTasks.filter(task => task.id !== id));
+    setSubTasks(subTasks.filter(st => st.id !== id));
   };
 
   const handleAddProgressItem = () => {
@@ -112,19 +191,38 @@ export function TaskModal({ task, isOpen, onClose, onSubmit }: TaskModalProps) {
     }));
   };
 
+  const handleSubTasksUpdate = async (updatedSubTasks: Task[]) => {
+    setSubTasks(updatedSubTasks);
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-[#004e89]">
-            {task ? 'Görevi Düzenle' : 'Yeni Görev'}
+            {modalTitle || (task ? 'Görevi Düzenle' : 'Yeni Görev')}
+            {parentTask && (
+              <span className="text-sm font-normal text-gray-500 ml-2">
+                ({parentTask.title})
+              </span>
+            )}
           </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            <span className="material-icons">close</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => setIsSubTaskSidebarOpen(true)}
+            >
+              <span className="material-icons text-gray-500">checklist</span>
+            </Button>
+            <button
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              <span className="material-icons">close</span>
+            </button>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -203,44 +301,58 @@ export function TaskModal({ task, isOpen, onClose, onSubmit }: TaskModalProps) {
             </label>
             <div className="space-y-2 mb-2">
               {subTasks.map(subTask => (
-                <div key={subTask.id} className="flex items-center gap-2">
+                <div key={subTask.id} className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded-md group">
                   <Checkbox
-                    checked={subTask.completed}
+                    checked={subTask.status === 'COMPLETED'}
                     onCheckedChange={() => handleToggleSubTask(subTask.id)}
                   />
-                  <span className={cn(
-                    "text-sm flex-1",
-                    subTask.completed && "line-through text-gray-500"
-                  )}>
-                    {subTask.title}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveSubTask(subTask.id)}
-                    className="text-gray-500 hover:text-red-500"
-                  >
-                    <span className="material-icons text-[14px]">delete</span>
-                  </button>
+                  <div className="flex-1">
+                    <span className={cn(
+                      "text-sm",
+                      subTask.status === 'COMPLETED' && "line-through text-gray-500"
+                    )}>
+                      {subTask.title}
+                    </span>
+                    {subTask.description && (
+                      <p className="text-xs text-gray-500 mt-0.5">{subTask.description}</p>
+                    )}
+                  </div>
+                  <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1">
+                    <Button
+                      type="button"
+                      onClick={() => handleEditSubTask(subTask)}
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 w-6 p-0"
+                    >
+                      <span className="material-icons text-[14px] text-blue-500">edit</span>
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => handleRemoveSubTask(subTask.id)}
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 w-6 p-0"
+                    >
+                      <span className="material-icons text-[14px] text-red-500">delete</span>
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
-            <div className="flex gap-2">
-              <Input
-                value={newSubTask}
-                onChange={(e) => setNewSubTask(e.target.value)}
-                placeholder="Yeni alt görev..."
-                className="flex-1"
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSubTask())}
-              />
-              <Button
-                type="button"
-                onClick={handleAddSubTask}
-                variant="outline"
-                size="sm"
-              >
-                Ekle
-              </Button>
-            </div>
+            <Button
+              type="button"
+              onClick={() => {
+                setEditingSubTask(undefined);
+                setShowAddSubTaskModal(true);
+              }}
+              variant="outline"
+              size="sm"
+              className="w-full"
+            >
+              <span className="material-icons text-[14px] mr-1">add</span>
+              Alt Görev Ekle
+            </Button>
           </div>
 
           <div>
@@ -339,7 +451,7 @@ export function TaskModal({ task, isOpen, onClose, onSubmit }: TaskModalProps) {
                 "transition-colors"
               )}
             >
-              {STATUS_OPTIONS.map((option) => (
+              {STATUS_OPTIONS.map((option: { value: TaskStatus; label: string }) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -365,6 +477,37 @@ export function TaskModal({ task, isOpen, onClose, onSubmit }: TaskModalProps) {
           </div>
         </form>
       </div>
+
+      <TaskModal
+        isOpen={showAddSubTaskModal}
+        onClose={() => {
+          setShowAddSubTaskModal(false);
+          setEditingSubTask(undefined);
+        }}
+        onSubmit={editingSubTask ? handleUpdateSubTask : handleAddSubTask}
+        task={editingSubTask}
+        modalTitle={editingSubTask ? "Alt Görevi Düzenle" : "Yeni Alt Görev"}
+        parentTask={task}
+      />
+
+      <SubTaskSidebar
+        task={{
+          id: task?.id || '',
+          userId: task?.userId || '',
+          title: task?.title || '',
+          description: task?.description || '',
+          prompt: task?.prompt || '',
+          status: task?.status || 'PENDING',
+          subTasks: subTasks,
+          tags: task?.tags || [],
+          progress: task?.progress || { done: [], todo: [] },
+          createdAt: task?.createdAt?.toString() || new Date().toString(),
+          updatedAt: task?.updatedAt?.toString() || new Date().toString()
+        }}
+        isOpen={isSubTaskSidebarOpen}
+        onClose={() => setIsSubTaskSidebarOpen(false)}
+        onUpdate={handleSubTasksUpdate}
+      />
     </div>
   );
 } 
