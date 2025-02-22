@@ -20,6 +20,7 @@ import { motion } from 'framer-motion';
 import { FiMail, FiLock } from 'react-icons/fi';
 import { FcGoogle } from 'react-icons/fc';
 import { IconType } from 'react-icons';
+import { encryptPassword } from '@/shared/utils/encryption';
 
 const formAnimation = {
   hidden: { opacity: 0, y: 20 },
@@ -57,7 +58,8 @@ export function LoginForm() {
 
   const onSubmit = async (values: LoginFormValues) => {
     try {
-      await login(values.email, values.password);
+      const encryptedPassword = encryptPassword(values.password);
+      await login(values.email, encryptedPassword);
       toast.success('Giriş başarılı!');
     } catch (error) {
       toast.error('Giriş yapılırken bir hata oluştu');

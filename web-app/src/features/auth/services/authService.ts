@@ -11,6 +11,7 @@ import {
   fetchSignInMethodsForEmail
 } from 'firebase/auth';
 import { auth } from '@/core/firebase/config';
+import { decryptPassword } from '@/shared/utils/encryption';
 
 import { adaptFirebaseUserToAuthUser } from '../utils/firebaseUserAdapter';
 
@@ -42,17 +43,24 @@ export const authService = {
   },
 
   // Email/Password ile giriş
-  loginWithEmail: async (email: string, password: string) => {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    
-    // Email doğrulama kontrolü
-    if (!userCredential.user.emailVerified) {
-      // Doğrulanmamış kullanıcıyı oturumdan çıkar
-      await auth.signOut();
-      throw new Error('Email adresiniz doğrulanmamış. Lütfen email kutunuzu kontrol edin.');
-    }
+  loginWithEmail: async (email: string, encryptedPassword: string) => {
+    try {
+      // Şifreyi çöz
+      const decryptedPassword = decryptPassword(encryptedPassword);
+      const userCredential = await signInWithEmailAndPassword(auth, email, decryptedPassword);
+      
+      // Email doğrulama kontrolü
+      if (!userCredential.user.emailVerified) {
+        // Doğrulanmamış kullanıcıyı oturumdan çıkar
+        await auth.signOut();
+        throw new Error('Email adresiniz doğrulanmamış. Lütfen email kutunuzu kontrol edin.');
+      }
 
-    return adaptFirebaseUserToAuthUser(userCredential.user);
+      return adaptFirebaseUserToAuthUser(userCredential.user);
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
   },
 
   // Google ile giriş
