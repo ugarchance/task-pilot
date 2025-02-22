@@ -20,16 +20,23 @@
     }
   ],
   "hosting": {
-    "public": "web-app/out",
+    "source": "web-app",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
     ],
+    "frameworksBackend": {
+      "region": "us-central1",
+      "serviceName": "ssrtaskpilotdaa45"
+    },
     "rewrites": [
       {
         "source": "**",
-        "destination": "/index.html"
+        "run": {
+          "serviceId": "ssrtaskpilotdaa45",
+          "region": "us-central1"
+        }
       }
     ]
   },

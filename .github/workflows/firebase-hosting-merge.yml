@@ -13,8 +13,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Dependencies
         run: cd web-app && npm install
-      - name: Build and Export
-        run: cd web-app && npm run export
+      - name: Build
+        run: cd web-app && npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
