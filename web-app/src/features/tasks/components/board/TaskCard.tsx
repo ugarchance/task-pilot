@@ -6,6 +6,8 @@ import { CSS } from '@dnd-kit/utilities';
 import { Card } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
 import { Tooltip,TooltipProvider,TooltipTrigger,TooltipContent } from '@/shared/components/ui/tooltip';
+import { Badge } from '@/shared/components/ui/badge';
+import { Progress } from '@/shared/components/ui/progress';
 
 import { TaskCardProps, TASK_CARD_STATUS_COLORS, STATUS_LABELS } from '@/features/tasks/types';
 import {
@@ -76,6 +78,14 @@ export function TaskCard({ task, onEdit, onDelete, singleColumnMode = false }: T
       setShowDeleteDialog(false);
     }
   };
+
+  const completedSubTasks = task.subTasks?.filter(st => st.completed).length || 0;
+  const totalSubTasks = task.subTasks?.length || 0;
+  const subTaskProgress = totalSubTasks > 0 ? (completedSubTasks / totalSubTasks) * 100 : 0;
+
+  const totalProgressItems = (task.progress?.done?.length || 0) + (task.progress?.todo?.length || 0);
+  const completedProgressItems = task.progress?.done?.length || 0;
+  const progressPercentage = totalProgressItems > 0 ? (completedProgressItems / totalProgressItems) * 100 : 0;
 
   return (
     <>
@@ -148,6 +158,40 @@ export function TaskCard({ task, onEdit, onDelete, singleColumnMode = false }: T
               "text-gray-600 line-clamp-2",
               singleColumnMode ? "text-sm" : "text-[10px]"
             )}>{task.description}</p>
+
+            {task.tags && task.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-1">
+                {task.tags.map(tag => (
+                  <Badge 
+                    key={tag}
+                    variant="secondary"
+                    className="text-[10px] px-1.5 py-0.5"
+                  >
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            )}
+
+            {task.subTasks && task.subTasks.length > 0 && (
+              <div className="mt-2">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[10px] text-gray-500">Alt Görevler</span>
+                  <span className="text-[10px] text-gray-500">{completedSubTasks}/{totalSubTasks}</span>
+                </div>
+                <Progress value={subTaskProgress} className="h-1" />
+              </div>
+            )}
+
+            {totalProgressItems > 0 && (
+              <div className="mt-2">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[10px] text-gray-500">İlerleme</span>
+                  <span className="text-[10px] text-gray-500">{completedProgressItems}/{totalProgressItems}</span>
+                </div>
+                <Progress value={progressPercentage} className="h-1" />
+              </div>
+            )}
             
             <div className="flex items-center justify-between text-[10px] text-gray-500">
               <div className="flex items-center space-x-1">

@@ -13,4 +13,14 @@ export interface Task {
   status: TaskStatus;
   createdAt: string;
   updatedAt: string;
+  tags: string[];
+  subTasks: {
+    id: string;
+    title: string;
+    completed: boolean;
+  }[];
+  progress: {
+    done: string[];
+    todo: string[];
+  };
 } 

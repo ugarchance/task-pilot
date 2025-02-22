@@ -41,6 +41,8 @@ export interface TaskBoardHeaderProps {
   onSearchChange: (value: string) => void;
   statusFilter: TaskStatusFilter;
   onStatusFilterChange: (value: TaskStatusFilter) => void;
+  selectedTag: string | null;
+  onSelectedTagChange: (value: string | null) => void;
   columns: { id: TaskStatus; title: string }[];
   hideFilters?: boolean;
   tasks: Task[];
@@ -50,5 +52,13 @@ export interface TaskModalProps {
   task?: Task;
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { title: string; description: string; prompt: string; status: TaskStatus }) => Promise<void>;
+  onSubmit: (data: { 
+    title: string; 
+    description: string; 
+    prompt: string; 
+    status: TaskStatus;
+    tags: string[];
+    subTasks: { id: string; title: string; completed: boolean }[];
+    progress: { done: string[]; todo: string[] };
+  }) => Promise<void>;
 } 

@@ -15,6 +15,13 @@ const nextConfig: NextConfig = {
   productionBrowserSourceMaps: false,
   experimental: {
     optimizePackageImports: ['@heroicons/react']
+  },
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'uuid': 'uuid/dist/esm-browser'
+    };
+    return config;
   }
 };
 

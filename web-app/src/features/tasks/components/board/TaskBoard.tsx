@@ -16,9 +16,24 @@ import { Button } from '@/shared/components/ui/button';
 interface TaskBoardProps {
   tasks: Task[];
   onTaskMove: (taskId: string, newStatus: TaskStatus) => Promise<void>;
-  onTaskUpdate: (taskId: string, data: { title: string; description: string; prompt: string; status: TaskStatus }) => Promise<void>;
+  onTaskUpdate: (taskId: string, data: { 
+    title: string; 
+    description: string; 
+    prompt: string; 
+    status: TaskStatus;
+    tags: string[];
+    subTasks: { id: string; title: string; completed: boolean }[];
+    progress: { done: string[]; todo: string[] };
+  }) => Promise<void>;
   onTaskDelete: (taskId: string) => Promise<void>;
-  onTaskCreate: (data: { title: string; description: string; prompt: string }) => Promise<void>;
+  onTaskCreate: (data: { 
+    title: string; 
+    description: string; 
+    prompt: string;
+    tags: string[];
+    subTasks: { id: string; title: string; completed: boolean }[];
+    progress: { done: string[]; todo: string[] };
+  }) => Promise<void>;
   showAddForm: boolean;
   onShowAddFormChange: (show: boolean) => void;
   loading?: boolean;
@@ -50,6 +65,8 @@ export function TaskBoard({
     setSearchQuery, 
     statusFilter, 
     setStatusFilter,
+    selectedTag,
+    setSelectedTag,
     filteredTasks 
   } = useTaskFilters(tasks);
 
@@ -70,12 +87,27 @@ export function TaskBoard({
     setEditingTask(task);
   };
 
-  const handleUpdateTask = async (data: { title: string; description: string; prompt: string; status: TaskStatus }) => {
+  const handleUpdateTask = async (data: { 
+    title: string; 
+    description: string; 
+    prompt: string; 
+    status: TaskStatus;
+    tags: string[];
+    subTasks: { id: string; title: string; completed: boolean }[];
+    progress: { done: string[]; todo: string[] };
+  }) => {
     if (editingTask) {
       await onTaskUpdate(editingTask.id, data);
       setEditingTask(undefined);
     } else {
-      await onTaskCreate({ title: data.title, description: data.description, prompt: data.prompt });
+      await onTaskCreate({ 
+        title: data.title, 
+        description: data.description, 
+        prompt: data.prompt,
+        tags: data.tags,
+        subTasks: data.subTasks,
+        progress: data.progress
+      });
       onShowAddFormChange(false);
     }
   };
@@ -91,6 +123,8 @@ export function TaskBoard({
               onSearchChange={setSearchQuery}
               statusFilter={statusFilter}
               onStatusFilterChange={setStatusFilter}
+              selectedTag={selectedTag}
+              onSelectedTagChange={setSelectedTag}
               columns={columns}
               hideFilters={singleColumnMode}
               tasks={tasks}
@@ -129,6 +163,8 @@ export function TaskBoard({
                 onSearchChange={setSearchQuery}
                 statusFilter={statusFilter}
                 onStatusFilterChange={setStatusFilter}
+                selectedTag={selectedTag}
+                onSelectedTagChange={setSelectedTag}
                 columns={columns}
                 hideFilters={singleColumnMode}
                 tasks={tasks}
