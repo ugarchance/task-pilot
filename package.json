@@ -2,5 +2,8 @@
   "dependencies": {
     "class-variance-authority": "^0.7.1",
     "nanoid": "^5.1.0"
+  },
+  "scripts": {
+    "export": "next build && next export"
   }
 }

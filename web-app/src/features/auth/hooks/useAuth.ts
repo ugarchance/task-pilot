@@ -69,7 +69,12 @@ export const useAuth = () => {
         }
         dispatch(setUser(authUser));
         toast.success('Giriş başarılı!');
-        router.push('/dashboard');
+        
+        // Yönlendirme işlemini güçlendirelim
+        setTimeout(() => {
+          router.push('/tasks');
+          router.refresh();
+        }, 100);
       }
       return authUser;
     } catch (error) {
@@ -100,7 +105,12 @@ export const useAuth = () => {
         }
         dispatch(setUser(authUser));
         toast.success('Giriş başarılı!');
-        router.push('/dashboard');
+        
+        // Yönlendirme işlemini güçlendirelim
+        setTimeout(() => {
+          router.push('/tasks');
+          router.refresh();
+        }, 100);
       }
       return authUser;
     } catch (error) {

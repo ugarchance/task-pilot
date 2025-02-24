@@ -15,6 +15,12 @@ interface TasksState {
     createdAt: string;
     updatedAt: string;
     userId: string;
+    tags: string[];
+    subTasks: Task[];
+    progress: {
+      done: string[];
+      todo: string[];
+    };
   }>;
 }
 
@@ -102,7 +108,6 @@ const taskSlice = createSlice({
     // Optimistik görev silme
     startOptimisticDelete: (state, action: PayloadAction<{ taskId: string }>) => {
       const { taskId } = action.payload;
-      // Görevi sakla ve listeden kaldır
       const taskToDelete = state.items.find(task => task.id === taskId);
       if (taskToDelete) {
         state.optimisticUpdates[taskId] = {
@@ -114,25 +119,18 @@ const taskSlice = createSlice({
           createdAt: taskToDelete.createdAt,
           updatedAt: taskToDelete.updatedAt,
           userId: taskToDelete.userId,
+          tags: taskToDelete.tags,
+          subTasks: taskToDelete.subTasks,
+          progress: taskToDelete.progress
         };
         state.items = state.items.filter(task => task.id !== taskId);
       }
     },
     revertOptimisticDelete: (state, action: PayloadAction<{ taskId: string }>) => {
       const { taskId } = action.payload;
-      // Saklanan görevi geri yükle
       const taskToRestore = state.optimisticUpdates[taskId];
       if (taskToRestore) {
-        state.items.push({
-          id: taskToRestore.id,
-          title: taskToRestore.title,
-          description: taskToRestore.description,
-          prompt: taskToRestore.prompt,
-          status: taskToRestore.status,
-          createdAt: taskToRestore.createdAt,
-          updatedAt: taskToRestore.updatedAt,
-          userId: taskToRestore.userId,
-        });
+        state.items.push(taskToRestore);
         delete state.optimisticUpdates[taskId];
       }
     },
@@ -142,18 +140,9 @@ const taskSlice = createSlice({
       const taskIndex = state.items.findIndex(task => task.id === taskId);
       
       if (taskIndex !== -1) {
-        // Orijinal task'ı sakla
         state.optimisticUpdates[taskId] = {
-          id: state.items[taskIndex].id,
-          title: state.items[taskIndex].title,
-          description: state.items[taskIndex].description,
-          prompt: state.items[taskIndex].prompt,
-          status: state.items[taskIndex].status,
-          createdAt: state.items[taskIndex].createdAt,
-          updatedAt: state.items[taskIndex].updatedAt,
-          userId: state.items[taskIndex].userId,
+          ...state.items[taskIndex]
         };
-        // Task'ı optimistik olarak güncelle
         state.items[taskIndex] = {
           ...state.items[taskIndex],
           status,
@@ -167,19 +156,8 @@ const taskSlice = createSlice({
       if (originalTask) {
         const taskIndex = state.items.findIndex(task => task.id === taskId);
         if (taskIndex !== -1) {
-          // Task'ı orijinal haline geri döndür
-          state.items[taskIndex] = {
-            id: originalTask.id,
-            title: originalTask.title,
-            description: originalTask.description,
-            prompt: originalTask.prompt,
-            status: originalTask.status,
-            createdAt: originalTask.createdAt,
-            updatedAt: originalTask.updatedAt,
-            userId: originalTask.userId,
-          };
+          state.items[taskIndex] = originalTask;
         }
-        // Optimistik güncelleme kaydını temizle
         delete state.optimisticUpdates[taskId];
       }
     },
@@ -304,19 +282,9 @@ const taskSlice = createSlice({
       })
       .addCase(deleteTask.rejected, (state, action) => {
         state.error = action.error.message || 'Görev silinirken bir hata oluştu';
-        // Hata durumunda görevi geri yükle
         if (action.meta.arg && state.optimisticUpdates[action.meta.arg]) {
           const taskToRestore = state.optimisticUpdates[action.meta.arg];
-          state.items.push({
-            id: taskToRestore.id,
-            title: taskToRestore.title,
-            description: taskToRestore.description,
-            prompt: taskToRestore.prompt,
-            status: taskToRestore.status,
-            createdAt: taskToRestore.createdAt,
-            updatedAt: taskToRestore.updatedAt,
-            userId: taskToRestore.userId,
-          });
+          state.items.push(taskToRestore);
           delete state.optimisticUpdates[action.meta.arg];
         }
       });
