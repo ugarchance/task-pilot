@@ -72,11 +72,18 @@ export async function PATCH(request: NextRequest, context: RouteParams) {
     // Task verisini döndür
     const responseData: Omit<Task, 'id'> & { id: string } = {
       id: taskDoc.id,
+      userId: taskData.userId || '',
       title: taskData.title || '',
       description: taskData.description || '',
+      prompt: taskData.prompt || '',
       status: currentStatus,
       createdAt: taskData.createdAt?.toDate() || new Date(),
-      updatedAt: taskData.updatedAt?.toDate() || new Date()
+      updatedAt: taskData.updatedAt?.toDate() || new Date(),
+      tags: taskData.tags || [],
+      subTasks: taskData.subTasks || [],
+      progress: taskData.progress || { done: [], todo: [] },
+      parentTaskId: taskData.parentTaskId,
+      isSubTask: taskData.isSubTask || false
     };
 
     return NextResponse.json(responseData);

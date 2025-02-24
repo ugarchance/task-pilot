@@ -75,7 +75,11 @@ export function useTasks(): UseTasksReturn {
         status: 'PENDING',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        userId: auth.currentUser?.uid || ''
+        userId: auth.currentUser?.uid || '',
+        tags: [],
+        subTasks: [],
+        progress: { done: [], todo: [] },
+        isSubTask: false
       };
 
       dispatch(startOptimisticCreate(tempTask));

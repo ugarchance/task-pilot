@@ -32,7 +32,7 @@ export default function ActiveTasksPage() {
   };
 
   const handleTaskUpdate = async (taskId: string, data: { title: string; description: string; status: TaskStatus }) => {
-    await updateTask(taskId, data);
+    await updateTask(taskId, { ...data, prompt: data.description });
   };
 
   const handleTaskDelete = async (taskId: string) => {
@@ -40,7 +40,7 @@ export default function ActiveTasksPage() {
   };
 
   const handleTaskCreate = async (data: { title: string; description: string }) => {
-    await createTask(data);
+    await createTask({ ...data, prompt: data.description });
     await fetchActiveTasks(); // Yeni görev oluşturulduktan sonra listeyi güncelle
   };
 

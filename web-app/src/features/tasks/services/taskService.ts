@@ -36,10 +36,17 @@ class TaskService {
       const data = doc.data();
       return {
         id: doc.id,
-        ...data,
+        userId: data.userId || userId,
+        title: data.title || '',
+        description: data.description || '',
         prompt: data.prompt || '',
+        status: data.status || 'PENDING',
+        tags: data.tags || [],
+        subTasks: data.subTasks || [],
+        progress: data.progress || { done: [], todo: [] },
         createdAt: data.createdAt.toDate().toISOString(),
-        updatedAt: data.updatedAt.toDate().toISOString()
+        updatedAt: data.updatedAt.toDate().toISOString(),
+        isSubTask: data.isSubTask || false
       } as Task;
     });
   }
@@ -58,10 +65,17 @@ class TaskService {
       const data = doc.data();
       return {
         id: doc.id,
-        ...data,
+        userId: data.userId || userId,
+        title: data.title || '',
+        description: data.description || '',
         prompt: data.prompt || '',
+        status: data.status || 'PENDING',
+        tags: data.tags || [],
+        subTasks: data.subTasks || [],
+        progress: data.progress || { done: [], todo: [] },
         createdAt: data.createdAt.toDate().toISOString(),
-        updatedAt: data.updatedAt.toDate().toISOString()
+        updatedAt: data.updatedAt.toDate().toISOString(),
+        isSubTask: data.isSubTask || false
       } as Task;
     });
   }
@@ -71,7 +85,7 @@ class TaskService {
     description: string; 
     prompt?: string;
     tags?: string[];
-    subTasks?: { id: string; title: string; completed: boolean }[];
+    subTasks?: Task[];
     progress?: { done: string[]; todo: string[] };
   }): Promise<Task> {
     const userId = this.getUserId();
@@ -96,7 +110,7 @@ class TaskService {
       ...newTask,
       createdAt: now.toDate().toISOString(),
       updatedAt: now.toDate().toISOString()
-    };
+    } as Task;
   }
 
   async updateTaskStatus(taskId: string, status: TaskStatus): Promise<Task> {
@@ -113,10 +127,17 @@ class TaskService {
     
     return {
       id: updatedDoc.id,
-      ...docData,
+      userId: docData?.userId || userId,
+      title: docData?.title || '',
+      description: docData?.description || '',
+      prompt: docData?.prompt || '',
+      status: docData?.status || 'PENDING',
+      tags: docData?.tags || [],
+      subTasks: docData?.subTasks || [],
+      progress: docData?.progress || { done: [], todo: [] },
       createdAt: docData?.createdAt.toDate().toISOString(),
       updatedAt: docData?.updatedAt.toDate().toISOString(),
-      userId: userId
+      isSubTask: docData?.isSubTask || false
     } as Task;
   }
 
@@ -128,7 +149,7 @@ class TaskService {
       prompt?: string; 
       status: TaskStatus;
       tags?: string[];
-      subTasks?: { id: string; title: string; completed: boolean }[];
+      subTasks?: Task[];
       progress?: { done: string[]; todo: string[] };
     }
   ): Promise<Task> {
@@ -151,10 +172,17 @@ class TaskService {
     
     return { 
       id: updatedDoc.id,
-      ...docData,
-      createdAt: docData?.createdAt?.toDate().toISOString() ?? Timestamp.now().toDate().toISOString(),
-      updatedAt: docData?.updatedAt?.toDate().toISOString() ?? Timestamp.now().toDate().toISOString(),
-      userId: userId
+      userId: docData?.userId || userId,
+      title: docData?.title || '',
+      description: docData?.description || '',
+      prompt: docData?.prompt || '',
+      status: docData?.status || 'PENDING',
+      tags: docData?.tags || [],
+      subTasks: docData?.subTasks || [],
+      progress: docData?.progress || { done: [], todo: [] },
+      createdAt: docData?.createdAt?.toDate().toISOString() ?? new Date().toISOString(),
+      updatedAt: docData?.updatedAt?.toDate().toISOString() ?? new Date().toISOString(),
+      isSubTask: docData?.isSubTask || false
     } as Task;
   }
 
@@ -178,10 +206,17 @@ class TaskService {
       const data = doc.data();
       return {
         id: doc.id,
-        ...data,
+        userId: data.userId || userId,
+        title: data.title || '',
+        description: data.description || '',
         prompt: data.prompt || '',
+        status: data.status || 'PENDING',
+        tags: data.tags || [],
+        subTasks: data.subTasks || [],
+        progress: data.progress || { done: [], todo: [] },
         createdAt: data.createdAt.toDate().toISOString(),
-        updatedAt: data.updatedAt.toDate().toISOString()
+        updatedAt: data.updatedAt.toDate().toISOString(),
+        isSubTask: data.isSubTask || false
       } as Task;
     });
   }
@@ -200,10 +235,17 @@ class TaskService {
       const data = doc.data();
       return {
         id: doc.id,
-        ...data,
+        userId: data.userId || userId,
+        title: data.title || '',
+        description: data.description || '',
         prompt: data.prompt || '',
+        status: data.status || 'PENDING',
+        tags: data.tags || [],
+        subTasks: data.subTasks || [],
+        progress: data.progress || { done: [], todo: [] },
         createdAt: data.createdAt.toDate().toISOString(),
-        updatedAt: data.updatedAt.toDate().toISOString()
+        updatedAt: data.updatedAt.toDate().toISOString(),
+        isSubTask: data.isSubTask || false
       } as Task;
     });
   }
@@ -222,10 +264,17 @@ class TaskService {
       const data = doc.data();
       return {
         id: doc.id,
-        ...data,
+        userId: data.userId || userId,
+        title: data.title || '',
+        description: data.description || '',
         prompt: data.prompt || '',
+        status: data.status || 'PENDING',
+        tags: data.tags || [],
+        subTasks: data.subTasks || [],
+        progress: data.progress || { done: [], todo: [] },
         createdAt: data.createdAt.toDate().toISOString(),
-        updatedAt: data.updatedAt.toDate().toISOString()
+        updatedAt: data.updatedAt.toDate().toISOString(),
+        isSubTask: data.isSubTask || false
       } as Task;
     });
   }

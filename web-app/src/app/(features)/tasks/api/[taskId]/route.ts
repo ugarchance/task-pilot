@@ -58,11 +58,18 @@ export async function PATCH(request: NextRequest, context: RouteParams) {
     // Task verisini döndür
     const responseData: Omit<Task, 'id'> & { id: string } = {
       id: taskDoc.id,
+      userId: updatedTaskData.userId || '',
       title: updatedTaskData.title || '',
       description: updatedTaskData.description || '',
+      prompt: updatedTaskData.prompt || '',
       status: updatedTaskData.status || 'PENDING',
       createdAt: updatedTaskData.createdAt?.toDate() || new Date(),
-      updatedAt: updatedTaskData.updatedAt?.toDate() || new Date()
+      updatedAt: updatedTaskData.updatedAt?.toDate() || new Date(),
+      tags: updatedTaskData.tags || [],
+      subTasks: updatedTaskData.subTasks || [],
+      progress: updatedTaskData.progress || { done: [], todo: [] },
+      parentTaskId: updatedTaskData.parentTaskId,
+      isSubTask: updatedTaskData.isSubTask || false
     };
 
     return NextResponse.json(responseData);
@@ -102,11 +109,18 @@ export async function DELETE(_request: NextRequest, context: RouteParams) {
     // Silmeden önce task verisini al
     const responseData: Omit<Task, 'id'> & { id: string } = {
       id: taskDoc.id,
+      userId: taskData.userId || '',
       title: taskData.title || '',
       description: taskData.description || '',
+      prompt: taskData.prompt || '',
       status: taskData.status || 'PENDING',
       createdAt: taskData.createdAt?.toDate() || new Date(),
-      updatedAt: taskData.updatedAt?.toDate() || new Date()
+      updatedAt: taskData.updatedAt?.toDate() || new Date(),
+      tags: taskData.tags || [],
+      subTasks: taskData.subTasks || [],
+      progress: taskData.progress || { done: [], todo: [] },
+      parentTaskId: taskData.parentTaskId,
+      isSubTask: taskData.isSubTask || false
     };
 
     // Görevi sil
