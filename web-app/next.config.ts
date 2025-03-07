@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   compress: true,
+  distDir: '.next',
   images: {
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 86400,

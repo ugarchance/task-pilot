@@ -2,7 +2,8 @@ import { auth } from '@/core/firebase/config';
 import { User } from 'firebase/auth'; 
 import Cookies from 'js-cookie';
 
-const AUTH_TOKEN_KEY = 'auth-token';
+// Firebase Hosting'de cookie adı '__session' olmalı
+const AUTH_TOKEN_KEY = '__session';
 
 export const setAuthToken = async (user: User | null) => { 
   if (!user) {
@@ -12,13 +13,14 @@ export const setAuthToken = async (user: User | null) => {
   const token = await user.getIdToken(); 
   Cookies.set(AUTH_TOKEN_KEY, token, {
     expires: 7,
+    path: '/',
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
   });
 };
 
 export const removeAuthToken = () => {
-  Cookies.remove(AUTH_TOKEN_KEY);
+  Cookies.remove(AUTH_TOKEN_KEY, { path: '/' });
 };
 
 export const getAuthToken = () => {

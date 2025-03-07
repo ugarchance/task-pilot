@@ -7,8 +7,8 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isPublicRoute = PUBLIC_ROUTES.includes(pathname as any);
   
-  // Auth token kontrolü
-  const token = request.cookies.get('auth-token');
+  // Auth token kontrolü - Firebase Hosting için cookie adı '__session' olmalı
+  const token = request.cookies.get('__session');
   
   // Kullanıcı giriş yapmamışsa ve tasks sayfasına erişmeye çalışıyorsa
   // doğrudan login sayfasına yönlendir
