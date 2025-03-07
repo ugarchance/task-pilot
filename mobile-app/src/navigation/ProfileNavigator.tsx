@@ -20,17 +20,17 @@ const ProfileNavigator = () => {
       }}
     >
       <Stack.Screen 
-        name={PROFILE_ROUTES.PROFILE_OVERVIEW} 
+        name="PROFILE_OVERVIEW" 
         component={ProfileOverviewScreen} 
         options={{ title: 'Profil' }}
       />
       <Stack.Screen 
-        name={PROFILE_ROUTES.EDIT_PROFILE} 
+        name="EDIT_PROFILE" 
         component={EditProfileScreen} 
         options={{ title: 'Profili Düzenle' }}
       />
       <Stack.Screen 
-        name={PROFILE_ROUTES.PREFERENCES} 
+        name="PREFERENCES" 
         component={PreferencesScreen} 
         options={{ title: 'Tercihler' }}
       />

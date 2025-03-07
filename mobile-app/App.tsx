@@ -4,18 +4,21 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider as ReduxProvider } from 'react-redux';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { store } from './src/store';
-import { theme } from './src/utils/theme';
 import AppNavigator from './src/navigation/AppNavigator';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { colors } from './src/utils/theme';
 
 export default function App() {
   return (
-    <ReduxProvider store={store}>
-      <PaperProvider theme={theme}>
-        <SafeAreaProvider>
-          <AppNavigator />
-          <StatusBar style="auto" />
-        </SafeAreaProvider>
-      </PaperProvider>
-    </ReduxProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ReduxProvider store={store}>
+        <PaperProvider>
+          <SafeAreaProvider>
+            <StatusBar style="auto" />
+            <AppNavigator />
+          </SafeAreaProvider>
+        </PaperProvider>
+      </ReduxProvider>
+    </GestureHandlerRootView>
   );
 }

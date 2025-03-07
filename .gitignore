@@ -71,3 +71,48 @@ node_modules/
 .cursor/rules/ses.mdc
 .cursor/rules/son.mdc
 .cursorrules
+
+# Mobile App specific
+.expo/
+.expo-shared/
+dist/
+npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+*.lock
+*.hprof
+
+# Android
+mobile-app/android/.idea/
+mobile-app/android/.gradle/
+mobile-app/android/local.properties
+mobile-app/android/*.iml
+mobile-app/android/build/
+mobile-app/android/app/build/
+mobile-app/android/captures/
+mobile-app/android/gradlew
+mobile-app/android/gradlew.bat
+mobile-app/android/gradle/
+mobile-app/android/*.properties
+mobile-app/android/*.pro
+mobile-app/android/*.keystore
+
+# iOS
+/ios/build/
+/ios/Pods/
+/ios/*.xcworkspace
+/ios/DerivedData/
+/ios/.xcode.env.local
+
+# Environment files
+.env
+.env.*
+!.env.example
+mobile-app/android/build.gradle
+mobile-app/android/settings.gradle
+mobile-app/android/app/build.gradle

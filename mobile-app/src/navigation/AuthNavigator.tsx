@@ -1,13 +1,13 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { AuthStackParamList } from './types';
-import { AUTH_ROUTES } from './routes';
+import { AUTH_ROUTES } from './routes'; // AUTH_ROUTES ekledik
 
-// Ekranları içe aktarıyoruz (henüz oluşturmadık)
-import LoginScreen from '../screens/auth/LoginScreen';
-import RegisterScreen from '../screens/auth/RegisterScreen';
-import ForgotPasswordScreen from '../screens/auth/ForgotPasswordScreen';
-import VerifyEmailScreen from '../screens/auth/VerifyEmailScreen';
+// Ekranları dinamik olarak içe aktaralım
+const LoginScreen = React.lazy(() => import('../screens/auth/LoginScreen'));
+const RegisterScreen = React.lazy(() => import('../screens/auth/RegisterScreen'));
+const ForgotPasswordScreen = React.lazy(() => import('../screens/auth/ForgotPasswordScreen'));
+const VerifyEmailScreen = React.lazy(() => import('../screens/auth/VerifyEmailScreen'));
 
 const Stack = createStackNavigator<AuthStackParamList>();
 

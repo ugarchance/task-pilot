@@ -14,6 +14,13 @@ const firebaseConfig = {
   measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
+// Config değerlerini kontrol et
+console.log('Firebase Config:', {
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY?.slice(0, 5) + '...',
+  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+});
+
 // Firebase başlatma
 const app = initializeApp(firebaseConfig);
 
