@@ -1,4 +1,6 @@
-import { useCallback } from 'react';
+'use client';
+
+import { useCallback, useEffect } from 'react';
 import { Task, TaskStatus } from '../types';
 import { useAppDispatch } from '@/shared/hooks/useAppDispatch';
 import { useAppSelector } from '@/shared/hooks/useAppSelector';
@@ -19,6 +21,7 @@ import {
 } from '../store/taskSlice';
 import { toast } from 'sonner';
 import { auth } from '@/core/firebase/config';
+import { useRouter } from 'next/navigation';
 
 interface UseTasksReturn {
   // State
@@ -42,9 +45,33 @@ interface UseTasksReturn {
 export function useTasks(): UseTasksReturn {
   const dispatch = useAppDispatch();
   const { items: tasks, loading, error } = useAppSelector((state) => state.tasks);
+  const router = useRouter();
+  
+  // Kullanıcı oturum açmadığında login sayfasına yönlendir
+  useEffect(() => {
+    if (!auth.currentUser) {
+      router.push('/login');
+    }
+  }, [router]);
 
   const user = auth.currentUser;
-  if (!user) throw new Error('Kullanıcı oturum açmamış');
+  
+  // Kullanıcı oturum açmadığında boş bir tasks dizisi ve bir hata mesajı döndür
+  if (!user) {
+    return {
+      tasks: [],
+      loading: false,
+      error: 'Kullanıcı oturum açmamış',
+      fetchTasks: async () => {},
+      fetchActiveTasks: async () => {},
+      fetchCompletedTasks: async () => {},
+      createTask: async () => {},
+      updateTaskStatus: async () => {},
+      updateTask: async () => {},
+      deleteTask: async () => {},
+      clearError: () => {},
+    };
+  }
 
   const handleFetchTasks = useCallback(async () => {
     await dispatch(fetchTasks());

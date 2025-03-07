@@ -4,9 +4,21 @@ import { useEffect, useState } from 'react';
 import { TaskBoard } from '../components/board/TaskBoard';
 import { useTasks } from '../hooks/useTasks';
 import { TaskStatus } from '../types';
+import { Button } from '@/shared/components/ui/button';
+import { useRouter } from 'next/navigation';
+import { auth } from '@/core/firebase/config';
 
 export default function TasksPage() {
+  const router = useRouter();
   const [showAddForm, setShowAddForm] = useState(false);
+  
+  // Kullanıcı oturum açmadığında doğrudan login sayfasına yönlendir
+  useEffect(() => {
+    if (!auth.currentUser) {
+      router.push('/login');
+    }
+  }, [router]);
+  
   const {
     tasks,
     loading,
@@ -19,13 +31,26 @@ export default function TasksPage() {
   } = useTasks();
 
   useEffect(() => {
-    fetchTasks();
+    if (auth.currentUser) {
+      fetchTasks();
+    }
   }, [fetchTasks]);
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-red-500">{error}</div>
+      <div className="flex flex-col items-center justify-center h-screen gap-4 p-4">
+        <div className="p-6 bg-white/5 backdrop-blur-lg border border-white/10 rounded-lg shadow-xl text-center max-w-md w-full">
+          <div className="text-red-500 text-xl font-semibold mb-4">{error}</div>
+          <p className="text-gray-400 mb-6">
+            Bu sayfayı görüntülemek için giriş yapmanız gerekmektedir.
+          </p>
+          <Button 
+            onClick={() => router.push('/login')}
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+          >
+            Giriş Yap
+          </Button>
+        </div>
       </div>
     );
   }

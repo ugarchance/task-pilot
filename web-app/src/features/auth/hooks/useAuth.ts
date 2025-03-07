@@ -69,7 +69,7 @@ export const useAuth = () => {
         }
         dispatch(setUser(authUser));
         toast.success('Giriş başarılı!');
-        router.push('/dashboard');
+        router.push('/tasks');
       }
       return authUser;
     } catch (error) {
@@ -100,7 +100,7 @@ export const useAuth = () => {
         }
         dispatch(setUser(authUser));
         toast.success('Giriş başarılı!');
-        router.push('/dashboard');
+        router.push('/tasks');
       }
       return authUser;
     } catch (error) {
@@ -177,7 +177,7 @@ export const useAuth = () => {
       const isVerified = authService.isEmailVerified();
       if (isVerified) {
         toast.success('Email doğrulandı!');
-        router.push('/dashboard');
+        router.push('/tasks');
       }
       return isVerified;
     } catch (error) {
