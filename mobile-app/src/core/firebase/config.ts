@@ -1,7 +1,9 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { initializeAuth } from 'firebase/auth';
+import * as firebaseAuth from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Web tarafından alınan aynı Firebase yapılandırması
 const firebaseConfig = {
@@ -24,8 +26,13 @@ console.log('Firebase Config:', {
 // Firebase başlatma
 const app = initializeApp(firebaseConfig);
 
-// Servisler
-export const auth = getAuth(app);
+// Auth servisi - AsyncStorage ile kalıcı oturum yönetimi
+const reactNativePersistence = (firebaseAuth as any).getReactNativePersistence;
+export const auth = initializeAuth(app, {
+  persistence: reactNativePersistence(AsyncStorage)
+});
+
+// Diğer servisler
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 

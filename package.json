@@ -11,6 +11,7 @@
     "deploy": "npm run build && firebase deploy"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.1.2",
     "class-variance-authority": "^0.7.1",
     "nanoid": "^5.1.0"
   }
