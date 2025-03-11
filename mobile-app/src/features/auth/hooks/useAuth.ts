@@ -15,8 +15,9 @@ export const useAuth = () => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       try {
         if (firebaseUser) {
-          if (!firebaseUser.emailVerified) {
-            // Email doğrulanmamış
+          if (!firebaseUser.emailVerified && 
+              firebaseUser.providerData[0]?.providerId === 'password') {
+            // Sadece email/şifre ile giriş yapan kullanıcılar için email doğrulama kontrolü
             dispatch(setUser(null));
             return;
           }
@@ -73,6 +74,28 @@ export const useAuth = () => {
       dispatch(setError(err.message));
       Alert.alert('Giriş Hatası', err.message);
       return false;
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
+  const loginWithGoogle = async () => {
+    try {
+      dispatch(setLoading(true));
+      const authUser = await authService.loginWithGoogle();
+      
+      if (authUser) {
+        // Kullanıcı başarılı bir şekilde giriş yaptı
+        dispatch(setUser(authUser));
+        return true;
+      }
+      return false;
+    } catch (error: any) {
+      dispatch(setError(error.message));
+      Alert.alert('Google Giriş Hatası', error.message);
+      return false;
+    } finally {
+      dispatch(setLoading(false));
     }
   };
 
@@ -89,6 +112,8 @@ export const useAuth = () => {
       dispatch(setError(err.message));
       Alert.alert('Kayıt Hatası', err.message);
       return false;
+    } finally {
+      dispatch(setLoading(false));
     }
   };
 
@@ -112,12 +137,13 @@ export const useAuth = () => {
         'Şifre Sıfırlama',
         'Şifre sıfırlama bağlantısı email adresinize gönderildi.'
       );
-      dispatch(setLoading(false));
       return true;
     } catch (err: any) {
       dispatch(setError(err.message));
       Alert.alert('Şifre Sıfırlama Hatası', err.message);
       return false;
+    } finally {
+      dispatch(setLoading(false));
     }
   };
 
@@ -153,6 +179,7 @@ export const useAuth = () => {
     loading,
     error,
     login,
+    loginWithGoogle,
     register,
     signOut,
     resetPassword,

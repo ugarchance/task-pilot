@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { TextInput, Button, ActivityIndicator } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -13,7 +13,7 @@ type LoginScreenNavigationProp = StackNavigationProp<AuthStackParamList, typeof 
 
 const LoginScreen = () => {
   const navigation = useNavigation<LoginScreenNavigationProp>();
-  const { login, loading } = useAuth();
+  const { login, loginWithGoogle, loading } = useAuth();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -53,6 +53,16 @@ const LoginScreen = () => {
     
     if (isEmailValid && isPasswordValid) {
       await login(email, password);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      await loginWithGoogle();
+      // Başarılı giriş işlemi
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Google ile giriş yapılırken bir hata oluştu';
+      Alert.alert('Giriş Hatası', errorMessage);
     }
   };
 
@@ -129,6 +139,18 @@ const LoginScreen = () => {
               <Text style={styles.orText}>VEYA</Text>
               <View style={styles.divider} />
             </View>
+
+            <Button
+              mode="outlined"
+              icon="google"
+              onPress={handleGoogleLogin}
+              loading={loading}
+              disabled={loading}
+              style={styles.googleButton}
+              contentStyle={styles.buttonContent}
+            >
+              Google ile Giriş Yap
+            </Button>
           </View>
           
           <View style={styles.registerContainer}>
@@ -230,6 +252,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     color: '#AAAAAA',
     fontSize: 12,
+  },
+  googleButton: {
+    marginTop: 16,
+    backgroundColor: 'white',
+    borderColor: '#DDDDDD',
   },
   registerContainer: {
     flexDirection: 'row',
